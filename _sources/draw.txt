@@ -1,0 +1,44 @@
+.. _draw:
+
+==========================================
+``draw``
+==========================================
+
+.. contents::
+
+Overview
+-------------
+``draw`` is a program within the sortseq_tools package which visualizes tabular
+data. The draw command can except a wide range of inputs.
+
+After you install `sortseq_tools`_, this program will be available to run at the command line. 
+
+Command-line usage
+---------------------
+.. argparse::
+   :module: sortseq.sortseq_for_doc
+   :func: parser
+   :prog: sortseq
+   :path: draw
+
+The draw command can except the following inputs::
+    Input_type     Output_Type
+    Library        Zipf_Plot
+    Mutation_Profile     Mutation_Plot
+    Pairwise_Mutrate     Color_Plot
+    Information_Footprint     Bar_Plot
+    Energy_Matrix        Color_Plot
+    Information_Comparison     Color_Plot
+    
+Energy matrix files can also be visualized as logos using the --logo flag.   
+
+   
+Examples
+-----------
+Example Command::
+
+    sortseq draw -i input.txt -o output.txt
+
+
+
+.. include:: weblinks.txt

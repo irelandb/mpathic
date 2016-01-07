@@ -1,0 +1,46 @@
+.. _compare_predictive_information:
+
+==========================================
+``compare_predictive_information``
+==========================================
+
+.. contents::
+
+Overview
+-------------
+``compare_predictiveinformation`` is a program within the sortseq_tools package which 
+computes the predictive information of any number of models on any number of
+data sets.
+
+After you install `sortseq_tools`_, this program will be available to run at the command line. 
+
+Command-line usage
+---------------------
+.. argparse::
+   :module: sortseq.sortseq_for_doc
+   :func: parser
+   :prog: sortseq
+   :path: compare_predictive_information
+
+   
+
+   
+Examples
+-----------
+Example command::
+
+    sortseq compare_predictiveinformation -m models.txt -ds dataset.txt
+
+Example Model File::
+
+    expname     file           modeltype
+    model_1     model_1.txt    LinearEmat
+    model_2     model_2.txt    Neighbor
+
+Example Dataset File::
+
+    expname     file
+    crp         crp.txt
+    full-wt     full-wt.txt
+
+.. include:: weblinks.txt

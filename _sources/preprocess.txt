@@ -1,0 +1,37 @@
+.. _preprocess:
+
+==========================================
+``preprocess``
+==========================================
+
+.. contents::
+
+Overview
+-------------
+``preprocess`` is a program within the sortseq_tools package which takes raw,
+paired end FASTA or FASTQ files as inputs and subjects them to quality score 
+filtering, barcode filtering, and filtering for paired end reads which align in
+the overlap region through the fastx toolkit. After filtering with this module
+you must use the gatherseqs function to put the files into a format that sortseq_tools
+can use.
+
+After you install `sortseq_tools`_, this program will be available to run at the command line. 
+
+Command-line usage
+---------------------
+.. argparse::
+   :module: sortseq.sortseq_for_doc
+   :func: parser
+   :prog: sortseq
+   :path: preprocess
+
+   
+
+   
+Examples
+-----------
+
+
+
+
+.. include:: weblinks.txt
