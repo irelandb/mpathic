@@ -11,8 +11,8 @@ Overview
 ``learn_model`` is a program within the sortseq_tools package which generates
 linear or nearest neighbor energy matrix models for sections of a sorted library.
 These models can be learned using four methods, designated by using -lm METHOD.
-You can choose from Berg Von Hippel (-lm bvh), least squares (-lm leastsq), iterative
-least squares (-lm iterative_LS), or mutual information maximization (-lm mi).
+You can choose from Berg Von Hippel (-lm ER), least squares (-lm LS),
+ or mutual information maximization (-lm IM).
 
 After you install `sortseq_tools`_, this program will be available to run at the command line. 
 
@@ -30,15 +30,21 @@ Command-line usage
 Example Input and Output
 -----------
 
-The input table to this program must contain a sequences column and counts columns
-for each bin. For a sort seq experiment, this can be any number of bins. For MPRA
-and selection experiments this must be ct_0 and ct_1.
+The input table to this program must contain a column labeled ct which is the sum
+of counts for each of the sequencing bins (bin_0 through bin_K). The following 
+columns should be labeled ct_0 ... ct_K, and should contain the sequencing counts
+for each bin 0 through K. Bin 0 must be the unsorted or unselected bin. If you did
+not sequence the unsorted bin, you should omit column ct_0 and start with ct_1.
+The last column should contain sequence identity. If the sequences DNA the
+column should be labeled 'seq', if they are RNA, the column should be labeled
+'seq_rna', and if they are amino acid sequences they should be labeled 'seq_pro'.
+Order of columns does matter.
 
 Example Input Table::
 
-   seq    ct_0     ct_1     ct_2    ...
-   ACG    1        5        7
-   GGT    8        5        5
+   ct    ct_0     ct_1     ct_2    seq
+   13    1        5        7      ACG
+   28    8        5        5      GGT
    ...
 
 Example Output Table::
@@ -50,6 +56,6 @@ Example Output Table::
 
 Example Command to Run the analysis::
    
-    sortseq learn_matrix -i data.txt -lm iterative_LS -s 3 -e 25
+    sortseq learn_matrix -i data.txt -lm LS --start 3 --end 25
 
 .. include:: weblinks.txt
