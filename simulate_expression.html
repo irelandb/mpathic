@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>simulate_expression &mdash; sortseq_tools 0.0.6 documentation</title>
+    <title>simulate_expression &mdash; sst 0.0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.0.6',
+        VERSION:     '0.0.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,10 +24,10 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="sortseq_tools 0.0.6 documentation" href="index.html" />
+    <link rel="top" title="sst 0.0.1 documentation" href="index.html" />
     <link rel="up" title="Programs" href="programs.html" />
-    <link rel="next" title="gatherseqs" href="gatherseqs.html" />
-    <link rel="prev" title="simulate_selection" href="simulate_selection.html" /> 
+    <link rel="next" title="Scan" href="Scan.html" />
+    <link rel="prev" title="simulate_sort" href="simulate_sort.html" /> 
   </head>
   <body>
     <div class="related">
@@ -37,12 +37,12 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="gatherseqs.html" title="gatherseqs"
+          <a href="Scan.html" title="Scan"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="simulate_selection.html" title="simulate_selection"
+          <a href="simulate_sort.html" title="simulate_sort"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">sortseq_tools 0.0.6 documentation</a> &raquo;</li>
+        <li><a href="index.html">sst 0.0.1 documentation</a> &raquo;</li>
           <li><a href="programs.html" accesskey="U">Programs</a> &raquo;</li> 
       </ul>
     </div>  
@@ -68,14 +68,14 @@
 <div class="section" id="overview">
 <h2><a class="toc-backref" href="#id3">Overview</a><a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p><tt class="docutils literal"><span class="pre">simulate_expression</span></tt> is a program within the sortseq_tools package which simulates
-an MPRA experiment.</p>
+an MPRA experiment or a dms_experiment.</p>
 <p>After you install <a href="#id6"><span class="problematic" id="id7">`sortseq_tools`_</span></a>, this program will be available to run at the command line.</p>
 </div>
 <div class="section" id="command-line-usage">
 <h2><a class="toc-backref" href="#id4">Command-line usage</a><a class="headerlink" href="#command-line-usage" title="Permalink to this headline">¶</a></h2>
 <pre class="literal-block">
-usage: sortseq simulate_expression [-h] [-lC TOTALLIBCOUNTS]
-                                   [-mC TOTALMRNACOUNTS] [-i I] [-o OUT]
+usage: sst simulate_expression [-h] [-lC TOTALLIBCOUNTS] [-mC TOTALMRNACOUNTS]
+                               [-i I] [-o OUT]
 </pre>
 <dl class="docutils">
 <dt>Options:</dt>
@@ -106,6 +106,29 @@ usage: sortseq simulate_expression [-h] [-lC TOTALLIBCOUNTS]
 </div>
 <div class="section" id="examples">
 <h2><a class="toc-backref" href="#id5">Examples</a><a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>This module accepts a library file as input. The input data file must contain
+a &#8216;ct&#8217; column and a sequences column. If the sequences DNA the
+column should be labeled &#8216;seq&#8217;, if they are RNA, the column should be labeled
+&#8216;seq_rna&#8217;, and if they are amino acid sequences they should be labeled &#8216;seq_pro&#8217;.</p>
+<p>Example Input Data Table:</p>
+<div class="highlight-python"><div class="highlight"><pre>ct    seq
+13    ACTAG
+5     AGGTA
+...
+</pre></div>
+</div>
+<p>Example Output Table:</p>
+<div class="highlight-python"><div class="highlight"><pre>ct    ct_0     ct_1   seq
+13    1        5      ACG
+28    8        5      GGT
+...
+</pre></div>
+</div>
+<p>Example Command to Run the analysis:</p>
+<div class="highlight-python"><div class="highlight"><pre>sortseq simulate_expression -i library.txt -o simulated_experiment.txt
+</pre></div>
+</div>
+<p>&#8211;totallibcounts 10000 &#8211;totalmRNAcounts 10000</p>
 </div>
 </div>
 
@@ -126,11 +149,11 @@ usage: sortseq simulate_expression [-h] [-lC TOTALLIBCOUNTS]
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="simulate_selection.html"
-                        title="previous chapter"><tt class="docutils literal"><span class="pre">simulate_selection</span></tt></a></p>
+  <p class="topless"><a href="simulate_sort.html"
+                        title="previous chapter"><tt class="docutils literal"><span class="pre">simulate_sort</span></tt></a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="gatherseqs.html"
-                        title="next chapter"><tt class="docutils literal"><span class="pre">gatherseqs</span></tt></a></p>
+  <p class="topless"><a href="Scan.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">Scan</span></tt></a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/simulate_expression.txt"
@@ -160,17 +183,17 @@ usage: sortseq simulate_expression [-h] [-lC TOTALLIBCOUNTS]
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="gatherseqs.html" title="gatherseqs"
+          <a href="Scan.html" title="Scan"
              >next</a> |</li>
         <li class="right" >
-          <a href="simulate_selection.html" title="simulate_selection"
+          <a href="simulate_sort.html" title="simulate_sort"
              >previous</a> |</li>
-        <li><a href="index.html">sortseq_tools 0.0.6 documentation</a> &raquo;</li>
+        <li><a href="index.html">sst 0.0.1 documentation</a> &raquo;</li>
           <li><a href="programs.html" >Programs</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2015, Bill Ireland.
+        &copy; Copyright 2016, Bill Ireland, Justin Kinney.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>

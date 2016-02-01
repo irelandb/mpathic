@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>predictiveinfo &mdash; sortseq_tools 0.0.6 documentation</title>
+    <title>predictiveinfo &mdash; sst 0.0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.0.6',
+        VERSION:     '0.0.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,10 +24,10 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="sortseq_tools 0.0.6 documentation" href="index.html" />
+    <link rel="top" title="sst 0.0.1 documentation" href="index.html" />
     <link rel="up" title="Programs" href="programs.html" />
-    <link rel="next" title="simulate_sublibrary" href="simulate_sublibrary.html" />
-    <link rel="prev" title="totalinfo" href="totalinfo.html" /> 
+    <link rel="next" title="Scan" href="simulate_library.html" />
+    <link rel="prev" title="learn_matrix" href="learn_matrix.html" /> 
   </head>
   <body>
     <div class="related">
@@ -37,12 +37,12 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="simulate_sublibrary.html" title="simulate_sublibrary"
+          <a href="simulate_library.html" title="Scan"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="totalinfo.html" title="totalinfo"
+          <a href="learn_matrix.html" title="learn_matrix"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">sortseq_tools 0.0.6 documentation</a> &raquo;</li>
+        <li><a href="index.html">sst 0.0.1 documentation</a> &raquo;</li>
           <li><a href="programs.html" accesskey="U">Programs</a> &raquo;</li> 
       </ul>
     </div>  
@@ -68,16 +68,18 @@
 <div class="section" id="overview">
 <h2><a class="toc-backref" href="#id3">Overview</a><a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p><tt class="docutils literal"><span class="pre">predictiveinfo</span></tt> is a program within the sortseq_tools package which computes
-the mutual information between a linear energy matrix model and a data set.
-Models which are closer to reality will have a higher mutual information value.</p>
+the mutual information between a linear or nearest neighbor energy matrix
+model and a data set. Models which are closer to reality will have a
+higher mutual information value.</p>
 <p>After you install <a href="#id6"><span class="problematic" id="id7">`sortseq_tools`_</span></a>, this program will be available to run at the command line.</p>
 </div>
 <div class="section" id="command-line-usage">
 <h2><a class="toc-backref" href="#id4">Command-line usage</a><a class="headerlink" href="#command-line-usage" title="Permalink to this headline">¶</a></h2>
 <pre class="literal-block">
-usage: sortseq predictiveinfo [-h] [-ds DATASET]
-                              [-expt {None,sortseq,selex,dms,mpra}] [-s START]
-                              [-e END] [-m M] [-o OUT]
+usage: sst predictiveinfo [-h] [-ds DATASET] [-mt {MAT,NBR}]
+                          [-expt {None,sortseq,selex,dms,mpra}]
+                          [-t {dna,rna,protein}] [--no_err] [-s START]
+                          [-e END] [-m MODEL] [-o OUT]
 </pre>
 <dl class="docutils">
 <dt>Options:</dt>
@@ -89,11 +91,27 @@ usage: sortseq predictiveinfo [-h] [-ds DATASET]
 <kbd><span class="option">-ds</span>, <span class="option">--dataset</span></kbd></td>
 <td>Undocumented</td></tr>
 <tr><td class="option-group" colspan="2">
+<kbd><span class="option">-mt=MAT</span>, <span class="option">--modeltype=MAT</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td><p class="first">Type of model to be evaluated</p>
+<p class="last">Possible choices: MAT, NBR</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
 <kbd><span class="option">-expt</span>, <span class="option">--exptype</span></kbd></td>
 </tr>
 <tr><td>&nbsp;</td><td><p class="first">Undocumented</p>
 <p class="last">Possible choices: None, sortseq, selex, dms, mpra</p>
 </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-t=dna</span>, <span class="option">--type=dna</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td><p class="first">Undocumented</p>
+<p class="last">Possible choices: dna, rna, protein</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--no_err=False</span></kbd></td>
+<td>Flag to use if you do not want to
+        calculate error</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">-s=0</span>, <span class="option">--start=0</span></kbd></td>
 </tr>
@@ -103,7 +121,7 @@ usage: sortseq predictiveinfo [-h] [-ds DATASET]
 <kbd><span class="option">-e</span>, <span class="option">--end</span></kbd></td>
 <td>Position to end your analyzed region</td></tr>
 <tr><td class="option-group">
-<kbd><span class="option">-m</span>, <span class="option">--m</span></kbd></td>
+<kbd><span class="option">-m</span>, <span class="option">--model</span></kbd></td>
 <td>Model file, otherwise input
         through the standard input.</td></tr>
 <tr><td class="option-group">
@@ -118,21 +136,41 @@ usage: sortseq predictiveinfo [-h] [-ds DATASET]
 <h2><a class="toc-backref" href="#id5">Example Input and Output</a><a class="headerlink" href="#example-input-and-output" title="Permalink to this headline">¶</a></h2>
 <p>The input table should be a sorted library data set (the model should be specified
 after the -m flag). You should use the &#8211;start and &#8211;end flags to specify the
-region in the data set that the model corresponds to.</p>
+region in the data set that the model corresponds to. The &#8211;modeltype flag
+should be used to specify whether is is a linear matrix (MAT) model or a nearest
+neighbor (NBR) model.</p>
+<p>Example Linear Model File:</p>
+<div class="highlight-python"><div class="highlight"><pre>pos    val_A    val_C    val_G     val_T
+0      .04      -.3      -.2       .15
+1      .2       .1       -.44      .05
+...
+</pre></div>
+</div>
+<p>By default the program will
+compute the error via bootstrapping. To skip this step, use the &#8211;no_err option</p>
+<p>The data input table to this program must contain a column labeled ct which is the sum
+of counts for each of the sequencing bins (bin_0 through bin_K). The following
+columns should be labeled ct_0 ... ct_K, and should contain the sequencing counts
+for each bin 0 through K. Bin 0 must be the unsorted or unselected bin. If you did
+not sequence the unsorted bin, you should omit column ct_0 and start with ct_1.
+The last column should contain sequence identity. If the sequences DNA the
+column should be labeled &#8216;seq&#8217;, if they are RNA, the column should be labeled
+&#8216;seq_rna&#8217;, and if they are amino acid sequences they should be labeled &#8216;seq_pro&#8217;.
+Order of columns does matter.</p>
 <p>Example Input Table:</p>
-<div class="highlight-python"><div class="highlight"><pre>seq    ct_0    ct_1  ...
-AGTT   20      13
-CCTA   35      40
+<div class="highlight-python"><div class="highlight"><pre>ct    ct_0     ct_1     ct_2    seq
+13    1        5        7      ACG
+28    8        5        5      GGT
 ...
 </pre></div>
 </div>
 <p>Example Output Table:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">info</span>
-<span class="o">.</span><span class="mi">94</span>
+<div class="highlight-python"><div class="highlight"><pre>info    std
+.94     .06
 </pre></div>
 </div>
 <p>Example command to run the analysis:</p>
-<div class="highlight-python"><div class="highlight"><pre>sortseq predictive info -i my_dataset.txt -m my_linear_matrix_model.txt -s 5 -e 20
+<div class="highlight-python"><div class="highlight"><pre>sortseq predictiveinfo -i my_dataset.txt -m my_linear_matrix_model.txt --modeltype MAT --start 5 --end 20
 </pre></div>
 </div>
 </div>
@@ -155,11 +193,11 @@ CCTA   35      40
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="totalinfo.html"
-                        title="previous chapter"><tt class="docutils literal"><span class="pre">totalinfo</span></tt></a></p>
+  <p class="topless"><a href="learn_matrix.html"
+                        title="previous chapter"><tt class="docutils literal"><span class="pre">learn_matrix</span></tt></a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="simulate_sublibrary.html"
-                        title="next chapter"><tt class="docutils literal"><span class="pre">simulate_sublibrary</span></tt></a></p>
+  <p class="topless"><a href="simulate_library.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">Scan</span></tt></a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/predictiveinfo.txt"
@@ -189,17 +227,17 @@ CCTA   35      40
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="simulate_sublibrary.html" title="simulate_sublibrary"
+          <a href="simulate_library.html" title="Scan"
              >next</a> |</li>
         <li class="right" >
-          <a href="totalinfo.html" title="totalinfo"
+          <a href="learn_matrix.html" title="learn_matrix"
              >previous</a> |</li>
-        <li><a href="index.html">sortseq_tools 0.0.6 documentation</a> &raquo;</li>
+        <li><a href="index.html">sst 0.0.1 documentation</a> &raquo;</li>
           <li><a href="programs.html" >Programs</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2015, Bill Ireland.
+        &copy; Copyright 2016, Bill Ireland, Justin Kinney.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>

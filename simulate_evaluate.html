@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>simulate_evaluate &mdash; sortseq_tools 0.0.6 documentation</title>
+    <title>simulate_evaluate &mdash; sst 0.0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.0.6',
+        VERSION:     '0.0.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,10 +24,10 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="sortseq_tools 0.0.6 documentation" href="index.html" />
+    <link rel="top" title="sst 0.0.1 documentation" href="index.html" />
     <link rel="up" title="Programs" href="programs.html" />
     <link rel="next" title="simulate_sort" href="simulate_sort.html" />
-    <link rel="prev" title="simulate_sublibrary" href="simulate_sublibrary.html" /> 
+    <link rel="prev" title="Scan" href="simulate_library.html" /> 
   </head>
   <body>
     <div class="related">
@@ -40,9 +40,9 @@
           <a href="simulate_sort.html" title="simulate_sort"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="simulate_sublibrary.html" title="simulate_sublibrary"
+          <a href="simulate_library.html" title="Scan"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">sortseq_tools 0.0.6 documentation</a> &raquo;</li>
+        <li><a href="index.html">sst 0.0.1 documentation</a> &raquo;</li>
           <li><a href="programs.html" accesskey="U">Programs</a> &raquo;</li> 
       </ul>
     </div>  
@@ -69,15 +69,16 @@
 <h2><a class="toc-backref" href="#id3">Overview</a><a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p><tt class="docutils literal"><span class="pre">simulate_evaluate</span></tt> is a program within the sortseq_tools package which
 uses an energy model to calculate the predicted energies of each sequence in a
-library. A simulated library must be evaluated before simulate_sort can be used.</p>
+library. It then adds a &#8216;val&#8217; column to the tabular data file you input containing
+the predicted energies.</p>
 <p>After you install <a href="#id6"><span class="problematic" id="id7">`sortseq_tools`_</span></a>, this program will be available to run at the command line.</p>
 </div>
 <div class="section" id="command-line-usage">
 <h2><a class="toc-backref" href="#id4">Command-line usage</a><a class="headerlink" href="#command-line-usage" title="Permalink to this headline">¶</a></h2>
 <pre class="literal-block">
-usage: sortseq simulate_evaluate [-h] [-m {RandomLinear,LinearEmat,Custom}]
-                                 [-mp MODELPARAM] [-t {dna,rna,protein}]
-                                 [-i I] [-o OUT]
+usage: sst simulate_evaluate [-h] [-m {RandomLinear,MAT,NBR}] [-mp MODELPARAM]
+                             [-t {dna,rna,protein}] [-i I] [-df] [-o OUT]
+                             [-s START] [-e END]
 </pre>
 <dl class="docutils">
 <dt>Options:</dt>
@@ -89,15 +90,13 @@ usage: sortseq simulate_evaluate [-h] [-m {RandomLinear,LinearEmat,Custom}]
 <kbd><span class="option">-m</span>, <span class="option">--modeltype</span></kbd></td>
 </tr>
 <tr><td>&nbsp;</td><td><p class="first">Type of Model to use</p>
-<p class="last">Possible choices: RandomLinear, LinearEmat, Custom</p>
+<p class="last">Possible choices: RandomLinear, MAT, NBR</p>
 </td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">-mp</span>, <span class="option">--modelparam</span></kbd></td>
 </tr>
-<tr><td>&nbsp;</td><td>Parameters should be entered as a list, with 
-        RandomLinear=[LengthofSeq],LinearEmat=[FileName]. If you are using a 
-        custom model enter a list of parameters with the first parameter
-        being the python function name (for mymodel.py enter mymodel) </td></tr>
+<tr><td>&nbsp;</td><td> 
+        RandomLinear=LengthofSeq,MAT=FileName, NBR=FileName. </td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">-t=dna</span>, <span class="option">--type=dna</span></kbd></td>
 </tr>
@@ -109,9 +108,20 @@ usage: sortseq simulate_evaluate [-h] [-m {RandomLinear,LinearEmat,Custom}]
 </tr>
 <tr><td>&nbsp;</td><td>Read input from file instead 
         of stdin</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-df=False</span>, <span class="option">--DataFrame=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Undocumented</td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">-o</span>, <span class="option">--out</span></kbd></td>
 <td>Undocumented</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-s=0</span>, <span class="option">--start=0</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Position to start your analyzed region</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-e</span>, <span class="option">--end</span></kbd></td>
+<td>Position to end your analyzed region</td></tr>
 </tbody>
 </table>
 </dd>
@@ -119,20 +129,27 @@ usage: sortseq simulate_evaluate [-h] [-m {RandomLinear,LinearEmat,Custom}]
 </div>
 <div class="section" id="examples">
 <h2><a class="toc-backref" href="#id5">Examples</a><a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<p>The input table to this function should be a library file. The model type needs
+<p>The input table to this function should be a standard data file for the sortseq
+package. The furthest right column should contain sequence identity. If the sequences DNA the
+column should be labeled &#8216;seq&#8217;, if they are RNA, the column should be labeled
+&#8216;seq_rna&#8217;, and if they are amino acid sequences they should be labeled &#8216;seq_pro&#8217;.
+Other columns are optional, but if you have counts columns they must follow the
+standard layout (&#8216;ct&#8217; on the far left, then &#8216;ct_K&#8217; for each bin). Order of columns
+does matter.</p>
+<p>The model type needs
 to be specified using the -m flag. The file name of the model should be specified
 after the -mp flag.</p>
-<p>Example Input Table:</p>
-<div class="highlight-python"><div class="highlight"><pre>seq    ct
-ACTAG  10
-AGGTA  5
+<p>Example Input Data Table:</p>
+<div class="highlight-python"><div class="highlight"><pre>ct    seq
+13    ACTAG
+5     AGGTA
 ...
 </pre></div>
 </div>
 <p>Example Output Table:</p>
-<div class="highlight-python"><div class="highlight"><pre>seq    ct     val
-ACTAG  10     -1.4
-AGGTA  5      -.5
+<div class="highlight-python"><div class="highlight"><pre>ct     val    seq
+10     -1.4   ACGAT
+5      -.5    GGACC
 ...
 </pre></div>
 </div>
@@ -156,8 +173,8 @@ AGGTA  5      -.5
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="simulate_sublibrary.html"
-                        title="previous chapter"><tt class="docutils literal"><span class="pre">simulate_sublibrary</span></tt></a></p>
+  <p class="topless"><a href="simulate_library.html"
+                        title="previous chapter"><tt class="docutils literal"><span class="pre">Scan</span></tt></a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="simulate_sort.html"
                         title="next chapter"><tt class="docutils literal"><span class="pre">simulate_sort</span></tt></a></p>
@@ -193,14 +210,14 @@ AGGTA  5      -.5
           <a href="simulate_sort.html" title="simulate_sort"
              >next</a> |</li>
         <li class="right" >
-          <a href="simulate_sublibrary.html" title="simulate_sublibrary"
+          <a href="simulate_library.html" title="Scan"
              >previous</a> |</li>
-        <li><a href="index.html">sortseq_tools 0.0.6 documentation</a> &raquo;</li>
+        <li><a href="index.html">sst 0.0.1 documentation</a> &raquo;</li>
           <li><a href="programs.html" >Programs</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2015, Bill Ireland.
+        &copy; Copyright 2016, Bill Ireland, Justin Kinney.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>simulate_sort &mdash; sortseq_tools 0.0.6 documentation</title>
+    <title>simulate_sort &mdash; sst 0.0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.0.6',
+        VERSION:     '0.0.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,9 +24,9 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="sortseq_tools 0.0.6 documentation" href="index.html" />
+    <link rel="top" title="sst 0.0.1 documentation" href="index.html" />
     <link rel="up" title="Programs" href="programs.html" />
-    <link rel="next" title="simulate_selection" href="simulate_selection.html" />
+    <link rel="next" title="simulate_expression" href="simulate_expression.html" />
     <link rel="prev" title="simulate_evaluate" href="simulate_evaluate.html" /> 
   </head>
   <body>
@@ -37,12 +37,12 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="simulate_selection.html" title="simulate_selection"
+          <a href="simulate_expression.html" title="simulate_expression"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="simulate_evaluate.html" title="simulate_evaluate"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">sortseq_tools 0.0.6 documentation</a> &raquo;</li>
+        <li><a href="index.html">sst 0.0.1 documentation</a> &raquo;</li>
           <li><a href="programs.html" accesskey="U">Programs</a> &raquo;</li> 
       </ul>
     </div>  
@@ -74,8 +74,10 @@ performing a Sort Seq experiment.</p>
 <div class="section" id="command-line-usage">
 <h2><a class="toc-backref" href="#id4">Command-line usage</a><a class="headerlink" href="#command-line-usage" title="Permalink to this headline">¶</a></h2>
 <pre class="literal-block">
-usage: sortseq simulate_sort [-h] [-nm {LogNormal,Normal,None,Custom}]
-                             [-npar NOISEPARAM] [-i I] [-n NBINS] [-o OUT]
+usage: sst simulate_sort [-h] [-nm {LogNormal,Normal,None}] [-npar NOISEPARAM]
+                         [-mt {RandomLinear,MAT,NBR}] [-m MODELPARAM] [-i I]
+                         [-n NBINS] [-sl] [-t {dna,rna,protein}] [-s START]
+                         [-e END] [-o OUT]
 </pre>
 <dl class="docutils">
 <dt>Options:</dt>
@@ -84,34 +86,57 @@ usage: sortseq simulate_sort [-h] [-nm {LogNormal,Normal,None,Custom}]
 <col class="description" />
 <tbody valign="top">
 <tr><td class="option-group" colspan="2">
-<kbd><span class="option">-nm=LogNormal</span>, <span class="option">--noisemodel=LogNormal</span></kbd></td>
+<kbd><span class="option">-nm=Normal</span>, <span class="option">--noisemodel=Normal</span></kbd></td>
 </tr>
-<tr><td>&nbsp;</td><td><p class="first">Function module name that determines noisy expression from base 
-        expression. For example if your function is contained 
-        mynoisemodel.py enter mynoisemodel. The default noise model 
-        adds a set autoflourescence value and log-normal noise. The 
-        function name within the module should be gennoisyexp. 
-        Its first input argument must be the list of expression values,
-        and the second should be a vector containing all other 
-        parameters as strings. If you would like no noise, enter None).</p>
-<p class="last">Possible choices: LogNormal, Normal, None, Custom</p>
+<tr><td>&nbsp;</td><td><p class="first">Noise Model to use.</p>
+<p class="last">Possible choices: LogNormal, Normal, None</p>
 </td></tr>
 <tr><td class="option-group" colspan="2">
-<kbd><span class="option">-npar=[.2,.2]</span>, <span class="option">--noiseparam=[.2,.2]</span></kbd></td>
+<kbd><span class="option">-npar=[.2]</span>, <span class="option">--noiseparam=[.2]</span></kbd></td>
 </tr>
 <tr><td>&nbsp;</td><td>
         Parameters for your noise model, as a list. The required parameters are
-        LogNormal=[autoflouro,scale],Normal=[scale]. For custom models, enter a
-        list of your parameters, with function name as the first entry.</td></tr>
+        LogNormal=[autoflouro,scale],Normal=[scale].</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-mt=MAT</span>, <span class="option">--modeltype=MAT</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td><p class="first">Type of Model to use</p>
+<p class="last">Possible choices: RandomLinear, MAT, NBR</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-m</span>, <span class="option">--modelparam</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>
+        RandomLinear=LengthofSeq,MAT=FileName,NBR=Filename.
+        </td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">-i=False</span>, <span class="option">--i=False</span></kbd></td>
 </tr>
 <tr><td>&nbsp;</td><td>Read input from file instead 
         of stdin</td></tr>
 <tr><td class="option-group" colspan="2">
-<kbd><span class="option">-n=4</span>, <span class="option">--nbins=4</span></kbd></td>
+<kbd><span class="option">-n=3</span>, <span class="option">--nbins=3</span></kbd></td>
 </tr>
 <tr><td>&nbsp;</td><td>Number of bins to sort into.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-sl=False</span>, <span class="option">--sequence_library=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>If you
+         would also like to simulate sequencing the library in bin zero, select
+         this option</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-t=dna</span>, <span class="option">--type=dna</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td><p class="first">Undocumented</p>
+<p class="last">Possible choices: dna, rna, protein</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-s=0</span>, <span class="option">--start=0</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Position to start your analyzed region</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-e</span>, <span class="option">--end</span></kbd></td>
+<td>Position to end your analyzed region</td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">-o</span>, <span class="option">--out</span></kbd></td>
 <td>Undocumented</td></tr>
@@ -122,22 +147,28 @@ usage: sortseq simulate_sort [-h] [-nm {LogNormal,Normal,None,Custom}]
 </div>
 <div class="section" id="example-input-and-output">
 <h2><a class="toc-backref" href="#id5">Example Input and Output</a><a class="headerlink" href="#example-input-and-output" title="Permalink to this headline">¶</a></h2>
-<p>The input table to this function must contain sequence, counts, and energy columns</p>
+<p>The input table to this function must contain a counts (ct) column and a sequences
+column. If the sequences DNA the
+column should be labeled &#8216;seq&#8217;, if they are RNA, the column should be labeled
+&#8216;seq_rna&#8217;, and if they are amino acid sequences they should be labeled &#8216;seq_pro&#8217;.
+By default, sequencing the library will also be simulated, and these results
+will be contained in bin 0. The total number of simulated counts will be equal
+to the number of library counts.</p>
 <p>Example Input Table:</p>
-<div class="highlight-python"><div class="highlight"><pre>seq    ct    val
-AGGTA  5     -.4
-AGTTA  1     -.2
+<div class="highlight-python"><div class="highlight"><pre>ct    seq
+5   AGGTA
+1   AGTTA
 ...
 </pre></div>
 </div>
 <p>Example Output Table:</p>
-<div class="highlight-python"><div class="highlight"><pre>seq    ct    val    ct_1     ct_2     ct_3 ...
-AGGTA  5     -.4    1        2        1
-AGTTA  1     -.2    0        1        0
+<div class="highlight-python"><div class="highlight"><pre>seq    ct    ct_0     ct_1     ct_2 ...
+AGGTA  5     1        2        1
+AGTTA  1     0        1        0
 ...
 </pre></div>
 </div>
-<p>The output table will contain all the original columns, along with the sorted columns (ct_1, ct_2 ...)</p>
+<p>The output table will contain the original columns, along with the sorted columns (ct_0, ct_1, ct_2, ...)</p>
 <p>An example command to execute this analysis:</p>
 <div class="highlight-python"><div class="highlight"><pre>sortseq simulate_sort -i my_library.txt -nm LogNormal -o my_sorted.txt
 </pre></div>
@@ -165,8 +196,8 @@ AGTTA  1     -.2    0        1        0
   <p class="topless"><a href="simulate_evaluate.html"
                         title="previous chapter"><tt class="docutils literal"><span class="pre">simulate_evaluate</span></tt></a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="simulate_selection.html"
-                        title="next chapter"><tt class="docutils literal"><span class="pre">simulate_selection</span></tt></a></p>
+  <p class="topless"><a href="simulate_expression.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">simulate_expression</span></tt></a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/simulate_sort.txt"
@@ -196,17 +227,17 @@ AGTTA  1     -.2    0        1        0
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="simulate_selection.html" title="simulate_selection"
+          <a href="simulate_expression.html" title="simulate_expression"
              >next</a> |</li>
         <li class="right" >
           <a href="simulate_evaluate.html" title="simulate_evaluate"
              >previous</a> |</li>
-        <li><a href="index.html">sortseq_tools 0.0.6 documentation</a> &raquo;</li>
+        <li><a href="index.html">sst 0.0.1 documentation</a> &raquo;</li>
           <li><a href="programs.html" >Programs</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2015, Bill Ireland.
+        &copy; Copyright 2016, Bill Ireland, Justin Kinney.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>

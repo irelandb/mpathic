@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>preprocess &mdash; sst 0.0.1 documentation</title>
+    <title>Scan &mdash; sst 0.0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -26,7 +26,8 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="sst 0.0.1 documentation" href="index.html" />
     <link rel="up" title="Programs" href="programs.html" />
-    <link rel="prev" title="Scan" href="Scan.html" /> 
+    <link rel="next" title="preprocess" href="preprocess.html" />
+    <link rel="prev" title="simulate_expression" href="simulate_expression.html" /> 
   </head>
   <body>
     <div class="related">
@@ -36,7 +37,10 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="Scan.html" title="Scan"
+          <a href="preprocess.html" title="preprocess"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="simulate_expression.html" title="simulate_expression"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">sst 0.0.1 documentation</a> &raquo;</li>
           <li><a href="programs.html" accesskey="U">Programs</a> &raquo;</li> 
@@ -48,33 +52,30 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="preprocess">
-<span id="id1"></span><h1><a class="toc-backref" href="#id2"><tt class="docutils literal"><span class="pre">preprocess</span></tt></a><a class="headerlink" href="#preprocess" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="scan">
+<span id="id1"></span><h1><a class="toc-backref" href="#id2"><tt class="docutils literal"><span class="pre">Scan</span></tt></a><a class="headerlink" href="#scan" title="Permalink to this headline">¶</a></h1>
 <div class="contents topic" id="contents">
 <p class="topic-title first">Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#preprocess" id="id2"><tt class="docutils literal"><span class="pre">preprocess</span></tt></a><ul>
+<li><a class="reference internal" href="#scan" id="id2"><tt class="docutils literal"><span class="pre">Scan</span></tt></a><ul>
 <li><a class="reference internal" href="#overview" id="id3">Overview</a></li>
 <li><a class="reference internal" href="#command-line-usage" id="id4">Command-line usage</a></li>
-<li><a class="reference internal" href="#examples" id="id5">Examples</a></li>
+<li><a class="reference internal" href="#examples-inputs-and-outputs" id="id5">Examples Inputs and outputs</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="section" id="overview">
 <h2><a class="toc-backref" href="#id3">Overview</a><a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p><tt class="docutils literal"><span class="pre">preprocess</span></tt> is a program within the sortseq_tools package which combines
-individual tabular data files,FASTA, or FASTQ files and combines them into a
-data format that sortseq can use. All other preprocessing, such as stiching
-paired end reads together, or filtering based on barcode or quality score, must
-be handled before running this module.</p>
+<p><tt class="docutils literal"><span class="pre">Scan</span></tt> is a program within the sortseq_tools package evaluates a given energy
+model on all possible positions within a supplied wild type sequence.</p>
 <p>After you install <a href="#id6"><span class="problematic" id="id7">`sortseq_tools`_</span></a>, this program will be available to run at the command line.</p>
 </div>
 <div class="section" id="command-line-usage">
 <h2><a class="toc-backref" href="#id4">Command-line usage</a><a class="headerlink" href="#command-line-usage" title="Permalink to this headline">¶</a></h2>
 <pre class="literal-block">
-usage: sst preprocess [-h] [-i I] [--tagkeys TAGKEYS] [-o OUT]
-                      [-s {dna,rna,protein}] [-f]
+usage: sst Scan [-h] [-w WTSEQ] [-m MODEL] [-t {dna,rna,protein}]
+                [-mt {MAT,NBR}] [-o OUT]
 </pre>
 <dl class="docutils">
 <dt>Options:</dt>
@@ -83,50 +84,52 @@ usage: sst preprocess [-h] [-i I] [--tagkeys TAGKEYS] [-o OUT]
 <col class="description" />
 <tbody valign="top">
 <tr><td class="option-group">
-<kbd><span class="option">-i</span>, <span class="option">--i</span></kbd></td>
-<td>Input file, otherwise input through the standard input.</td></tr>
+<kbd><span class="option">-w</span>, <span class="option">--wtseq</span></kbd></td>
+<td>Wild Type sequence</td></tr>
 <tr><td class="option-group">
-<kbd><span class="option">--tagkeys</span></kbd></td>
-<td>Undocumented</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">-o</span>, <span class="option">--out</span></kbd></td>
-<td>Output file, otherwise use standard output.</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">-s</span>, <span class="option">--seqtype</span></kbd></td>
-<td><p class="first">Type of sequence to expect in input files.</p>
+<kbd><span class="option">-m</span>, <span class="option">--model</span></kbd></td>
+<td>model to use</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-t=dna</span>, <span class="option">--type=dna</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td><p class="first">Undocumented</p>
 <p class="last">Possible choices: dna, rna, protein</p>
 </td></tr>
 <tr><td class="option-group" colspan="2">
-<kbd><span class="option">-f=False</span>, <span class="option">--fast=False</span></kbd></td>
+<kbd><span class="option">-mt=MAT</span>, <span class="option">--modeltype=MAT</span></kbd></td>
 </tr>
-<tr><td>&nbsp;</td><td>Output is a little harder to read, but is written much faster.</td></tr>
+<tr><td>&nbsp;</td><td><p class="first">Type of Model</p>
+<p class="last">Possible choices: MAT, NBR</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-o</span>, <span class="option">--out</span></kbd></td>
+<td>Undocumented</td></tr>
 </tbody>
 </table>
 </dd>
 </dl>
 </div>
-<div class="section" id="examples">
-<h2><a class="toc-backref" href="#id5">Examples</a><a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<p>The core input is a tabular data file which specifies which data files contain
-the sequences from which bin. The file must contain a &#8216;bin&#8217; column and a &#8216;file&#8217;
-column.</p>
-<p>Example Input Table:</p>
-<div class="highlight-python"><div class="highlight"><pre>bin  file
-0    ~/my_bin_0.fasta
-1    ~/my_bin_1.fasta
-</pre></div>
-</div>
-<p>The output of this module will be a data set in a tabular format that can
-be fed to the rest of the modules in the sortseq program.</p>
-<p>Example Output Table:</p>
-<div class="highlight-python"><div class="highlight"><pre>ct    ct_0     ct_1     ct_2    seq
-13    1        5        7      ACG
-28    8        5        5      GGT
+<div class="section" id="examples-inputs-and-outputs">
+<h2><a class="toc-backref" href="#id5">Examples Inputs and outputs</a><a class="headerlink" href="#examples-inputs-and-outputs" title="Permalink to this headline">¶</a></h2>
+<p>A wild type sequence must be specified after the &#8211;wtseq flag. A linear
+or nearest neighbor energy model must also be specified after a -m flag.</p>
+<p>An example input model could be of the form:</p>
+<div class="highlight-python"><div class="highlight"><pre> pos    val_A    val_C    val_G     val_T
+0      .04      -.3      -.2       .15
+1      .2       .1       -.44      .05
 ...
 </pre></div>
 </div>
-<p>Example command to run the analysis:</p>
-<div class="highlight-python"><div class="highlight"><pre>sortseq preprocess -i my_fileslist.txt -o mydataset.txt --type DNA
+<p>And the output will be of the form:</p>
+<div class="highlight-python"><div class="highlight"><pre>seq    val    start    length
+ACAGC  -.1       0        5
+TTATT    0      10        5
+AGGAT   .1      17        5
+...
+</pre></div>
+</div>
+<p>An example command to execute similar analysis:</p>
+<div class="highlight-python"><div class="highlight"><pre>sortseq Scan -m my_neighbor_model.txt --modeltype NBR -w AGACCAGATAGATTATTACCCC -o my_Scan.txt
 </pre></div>
 </div>
 </div>
@@ -140,20 +143,23 @@ be fed to the rest of the modules in the sortseq program.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">preprocess</span></tt></a><ul>
+<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">Scan</span></tt></a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
 <li><a class="reference internal" href="#command-line-usage">Command-line usage</a></li>
-<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#examples-inputs-and-outputs">Examples Inputs and outputs</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="Scan.html"
-                        title="previous chapter"><tt class="docutils literal"><span class="pre">Scan</span></tt></a></p>
+  <p class="topless"><a href="simulate_expression.html"
+                        title="previous chapter"><tt class="docutils literal"><span class="pre">simulate_expression</span></tt></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="preprocess.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">preprocess</span></tt></a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
-    <li><a href="_sources/preprocess.txt"
+    <li><a href="_sources/Scan.txt"
            rel="nofollow">Show Source</a></li>
   </ul>
 <div id="searchbox" style="display: none">
@@ -180,7 +186,10 @@ be fed to the rest of the modules in the sortseq program.</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="Scan.html" title="Scan"
+          <a href="preprocess.html" title="preprocess"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="simulate_expression.html" title="simulate_expression"
              >previous</a> |</li>
         <li><a href="index.html">sst 0.0.1 documentation</a> &raquo;</li>
           <li><a href="programs.html" >Programs</a> &raquo;</li> 
