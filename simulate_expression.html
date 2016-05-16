@@ -6,9 +6,9 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>simulate_expression &mdash; sortseq_tools 0.0.1 documentation</title>
+    <title>simulate_expression &mdash; sst 0.0.1 documentation</title>
     
-    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -23,31 +23,41 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="sortseq_tools 0.0.1 documentation" href="index.html" /> 
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="sst 0.0.1 documentation" href="index.html" />
+    <link rel="up" title="Programs" href="programs.html" />
+    <link rel="next" title="Scan" href="Scan.html" />
+    <link rel="prev" title="simulate_sort" href="simulate_sort.html" /> 
   </head>
-  <body role="document">
-    <div class="related" role="navigation" aria-label="related navigation">
+  <body>
+    <div class="related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li class="nav-item nav-item-0"><a href="index.html">sortseq_tools 0.0.1 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="Scan.html" title="Scan"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="simulate_sort.html" title="simulate_sort"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">sst 0.0.1 documentation</a> &raquo;</li>
+          <li><a href="programs.html" accesskey="U">Programs</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body" role="main">
+          <div class="body">
             
   <div class="section" id="simulate-expression">
-<span id="id1"></span><h1><a class="toc-backref" href="#id2"><code class="docutils literal"><span class="pre">simulate_expression</span></code></a><a class="headerlink" href="#simulate-expression" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1><a class="toc-backref" href="#id2"><tt class="docutils literal"><span class="pre">simulate_expression</span></tt></a><a class="headerlink" href="#simulate-expression" title="Permalink to this headline">¶</a></h1>
 <div class="contents topic" id="contents">
 <p class="topic-title first">Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#simulate-expression" id="id2"><code class="docutils literal"><span class="pre">simulate_expression</span></code></a><ul>
+<li><a class="reference internal" href="#simulate-expression" id="id2"><tt class="docutils literal"><span class="pre">simulate_expression</span></tt></a><ul>
 <li><a class="reference internal" href="#overview" id="id3">Overview</a></li>
 <li><a class="reference internal" href="#command-line-usage" id="id4">Command-line usage</a></li>
 <li><a class="reference internal" href="#examples" id="id5">Examples</a></li>
@@ -57,19 +67,16 @@
 </div>
 <div class="section" id="overview">
 <h2><a class="toc-backref" href="#id3">Overview</a><a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal"><span class="pre">simulate_expression</span></code> is a program within the sortseq_tools package which simulates
+<p><tt class="docutils literal"><span class="pre">simulate_expression</span></tt> is a program within the sortseq_tools package which simulates
 an MPRA experiment or a dms_experiment.</p>
 <p>After you install <a href="#id6"><span class="problematic" id="id7">`sortseq_tools`_</span></a>, this program will be available to run at the command line.</p>
 </div>
 <div class="section" id="command-line-usage">
 <h2><a class="toc-backref" href="#id4">Command-line usage</a><a class="headerlink" href="#command-line-usage" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre><span></span>usage: sortseq_tools simulate_expression [-h] [-lC TOTALLIBCOUNTS]
-                                         [-mC TOTALMRNACOUNTS]
-                                         [-mt {RandomLinear,MAT,NBR}]
-                                         [-m MODEL] [-s START] [-e END] [-i I]
-                                         [-o OUT]
-</pre></div>
-</div>
+<pre class="literal-block">
+usage: sst simulate_expression [-h] [-lC TOTALLIBCOUNTS] [-mC TOTALMRNACOUNTS]
+                               [-i I] [-o OUT]
+</pre>
 <dl class="docutils">
 <dt>Options:</dt>
 <dd><table class="first last docutils option-list" frame="void" rules="none">
@@ -85,24 +92,6 @@ an MPRA experiment or a dms_experiment.</p>
 <kbd><span class="option">-mC=1000000</span>, <span class="option">--totalmRNAcounts=1000000</span></kbd></td>
 </tr>
 <tr><td>&nbsp;</td><td>Number of mRNA sequences.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">-mt=MAT</span>, <span class="option">--modeltype=MAT</span></kbd></td>
-</tr>
-<tr><td>&nbsp;</td><td><p class="first">Type of Model to use</p>
-<p class="last">Possible choices: RandomLinear, MAT, NBR</p>
-</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">-m</span>, <span class="option">--model</span></kbd></td>
-<td>
-        MAT=FileName,NBR=Filename.
-        </td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">-s=0</span>, <span class="option">--start=0</span></kbd></td>
-</tr>
-<tr><td>&nbsp;</td><td>Position to start your analyzed region</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">-e</span>, <span class="option">--end</span></kbd></td>
-<td>Position to end your analyzed region</td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">-i</span>, <span class="option">--i</span></kbd></td>
 <td>Input file, otherwise input
@@ -118,25 +107,25 @@ an MPRA experiment or a dms_experiment.</p>
 <div class="section" id="examples">
 <h2><a class="toc-backref" href="#id5">Examples</a><a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <p>This module accepts a library file as input. The input data file must contain
-a &#8216;ct&#8217; column and a sequences column. If the sequences are DNA the
+a &#8216;ct&#8217; column and a sequences column. If the sequences DNA the
 column should be labeled &#8216;seq&#8217;, if they are RNA, the column should be labeled
 &#8216;seq_rna&#8217;, and if they are amino acid sequences they should be labeled &#8216;seq_pro&#8217;.</p>
 <p>Example Input Data Table:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>ct    seq
+<div class="highlight-python"><div class="highlight"><pre>ct    seq
 13    ACTAG
 5     AGGTA
 ...
 </pre></div>
 </div>
 <p>Example Output Table:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>ct    ct_0     ct_1   seq
+<div class="highlight-python"><div class="highlight"><pre>ct    ct_0     ct_1   seq
 13    1        5      ACG
 28    8        5      GGT
 ...
 </pre></div>
 </div>
 <p>Example Command to Run the analysis:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>sortseq simulate_expression -i library.txt -o simulated_experiment.txt
+<div class="highlight-python"><div class="highlight"><pre>sortseq simulate_expression -i library.txt -o simulated_experiment.txt
 </pre></div>
 </div>
 <p>&#8211;totallibcounts 10000 &#8211;totalmRNAcounts 10000</p>
@@ -147,11 +136,11 @@ column should be labeled &#8216;seq&#8217;, if they are RNA, the column should b
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#"><code class="docutils literal"><span class="pre">simulate_expression</span></code></a><ul>
+<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">simulate_expression</span></tt></a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
 <li><a class="reference internal" href="#command-line-usage">Command-line usage</a></li>
 <li><a class="reference internal" href="#examples">Examples</a></li>
@@ -159,14 +148,18 @@ column should be labeled &#8216;seq&#8217;, if they are RNA, the column should b
 </li>
 </ul>
 
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/simulate_expression.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="simulate_sort.html"
+                        title="previous chapter"><tt class="docutils literal"><span class="pre">simulate_sort</span></tt></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Scan.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">Scan</span></tt></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/simulate_expression.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
@@ -183,18 +176,25 @@ column should be labeled &#8216;seq&#8217;, if they are RNA, the column should b
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
-        <li class="nav-item nav-item-0"><a href="index.html">sortseq_tools 0.0.1 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="Scan.html" title="Scan"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="simulate_sort.html" title="simulate_sort"
+             >previous</a> |</li>
+        <li><a href="index.html">sst 0.0.1 documentation</a> &raquo;</li>
+          <li><a href="programs.html" >Programs</a> &raquo;</li> 
       </ul>
     </div>
-    <div class="footer" role="contentinfo">
+    <div class="footer">
         &copy; Copyright 2016, Bill Ireland, Justin Kinney.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.5.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>
