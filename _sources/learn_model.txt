@@ -1,14 +1,14 @@
-.. _learn_matrix:
+.. _learn_model:
 
 ==========================================
-``learn_matrix``
+``learn_model``
 ==========================================
 
 .. contents::
 
 Overview
 -------------
-``learn_matrix`` is a program within the sortseq_tools package which generates
+``learn_model`` is a program within the sortseq_tools package which generates
 linear energy matrix models for sections of a sorted library.
 
 After you install `sortseq_tools`_, this program will be available to run at the command line. 
@@ -19,7 +19,7 @@ Command-line usage
    :module: sortseq.sortseq_for_doc
    :func: parser
    :prog: sortseq
-   :path: learn_matrix
+   :path: learn_model
 
    
 

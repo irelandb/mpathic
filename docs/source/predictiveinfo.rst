@@ -9,18 +9,17 @@
 Overview
 -------------
 ``predictiveinfo`` is a program within the sortseq_tools package which computes
-the mutual information between a linear or nearest neighbor energy matrix 
-model and a data set. Models which are closer to reality will have a 
-higher mutual information value.
+the mutual information between a linear energy matrix model and a data set.
+Models which are closer to reality will have a higher mutual information value.
 
 After you install `sortseq_tools`_, this program will be available to run at the command line. 
 
 Command-line usage
 ---------------------
 .. argparse::
-   :module: sortseq_tools.sortseq_for_doc
+   :module: sortseq.sortseq_for_doc
    :func: parser
-   :prog: sortseq_tools
+   :prog: sortseq
    :path: predictiveinfo
 
    
@@ -31,46 +30,23 @@ Example Input and Output
 
 The input table should be a sorted library data set (the model should be specified
 after the -m flag). You should use the --start and --end flags to specify the
-region in the data set that the model corresponds to. The --modeltype flag
-should be used to specify whether is is a linear matrix (MAT) model or a nearest
-neighbor (NBR) model. 
-
-Example Linear Model File::
-
-   pos    val_A    val_C    val_G     val_T
-   0      .04      -.3      -.2       .15
-   1      .2       .1       -.44      .05
-   ...
-
-By default the program will
-compute the error via bootstrapping. To skip this step, use the --no_err option
-
-The data input table to this program must contain a column labeled ct which is the sum
-of counts for each of the sequencing bins (bin_0 through bin_K). The following 
-columns should be labeled ct_0 ... ct_K, and should contain the sequencing counts
-for each bin 0 through K. Bin 0 must be the unsorted or unselected bin. If you did
-not sequence the unsorted bin, you should omit column ct_0 and start with ct_1.
-The last column should contain sequence identity. If the sequences are DNA the
-column should be labeled 'seq', if they are RNA, the column should be labeled
-'seq_rna', and if they are amino acid sequences they should be labeled 'seq_pro'.
-Order of columns does matter.
+region in the data set that the model corresponds to.
 
 Example Input Table::
 
-   ct    ct_0     ct_1     ct_2    seq
-   13    1        5        7      ACG
-   28    8        5        5      GGT
-   ...
-
+    seq    ct_0    ct_1  ...
+    AGTT   20      13
+    CCTA   35      40
+    ...
 
 Example Output Table::
 
-    info    std
-    .94     .06
+    info
+    .94
 
 Example command to run the analysis::
 
-   sortseq predictiveinfo -i my_dataset.txt -m my_linear_matrix_model.txt --modeltype MAT --start 5 --end 20
+   sortseq predictive info -i my_dataset.txt -m my_linear_matrix_model.txt -s 5 -e 20
 
 
 .. include:: weblinks.txt

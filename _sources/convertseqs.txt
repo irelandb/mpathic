@@ -1,7 +1,7 @@
-.. _simulate_library:
+.. _convertseqs:
 
 ==========================================
-``simulate_library``
+``convertseqs``
 ==========================================
 
 .. contents::
@@ -19,27 +19,13 @@ Command-line usage
    :module: sortseq.sortseq_for_doc
    :func: parser
    :prog: sortseq
-   :path: simulate_library
+   :path: convertseqs
 
    
 
    
-Examples Inputs and outputs
+Examples
 -----------
-
-To generate a library of mutated sequences you could use the command::
-    
-    sortseq simulate_library -w ACAGGGTTAC -n 50000 -m .2
-
-This will output a simulated library of the form:: 
-
-    seq           ct
-    ACAGGGTTAC    100
-    ACGGGGTTAC    50
-    ...
-
-
-     
 
 
 

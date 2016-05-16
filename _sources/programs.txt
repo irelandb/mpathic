@@ -17,7 +17,7 @@ Main Programs:
    profile_mutrates
    profile_info
    fromto_mutrate
-   learn_matrix
+   learn_model
    totalinfo
    predictiveinfo
    simulate_sublibrary
@@ -29,7 +29,7 @@ Main Programs:
    logratios
    errfromtags
    convertseqs
-   compare_predictiveinformation
+   compare_predictive_information
    draw
    pairwise_mutrate
    preprocess
