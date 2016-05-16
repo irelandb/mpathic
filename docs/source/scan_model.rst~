@@ -1,0 +1,57 @@
+.. _scan_model:
+
+==========================================
+``scan_model``
+==========================================
+
+.. contents::
+
+Overview
+-------------
+``scan_model`` is a program within the sortseq_tools package which evaluates a given energy
+model on all possible positions within a supplied wild type sequence. It will then
+display the sequences in order of binding energy.
+
+After you install `sortseq_tools`_, this program will be available to run at the command line. 
+
+Command-line usage
+---------------------
+.. argparse::
+   :module: sortseq_tools.sortseq_for_doc
+   :func: parser
+   :prog: sortseq_tools
+   :path: scan_model
+
+   
+
+   
+Examples Inputs and outputs
+-----------
+
+A wild type sequence must be specified after the --wtseq flag. A linear
+or nearest neighbor energy model must also be specified after a -m flag.
+
+
+An example input model could be of the form:: 
+
+    pos    val_A    val_C    val_G     val_T
+   0      .04      -.3      -.2       .15
+   1      .2       .1       -.44      .05
+   ...
+
+And the output will be of the form::
+
+   seq    val    start    length    ori     contig
+   ACAGC  -.1       0        5        +     manual
+   TTATT    0      10        5        +     manual
+   AGGAT   .1      17        5        +     manual
+   ...
+
+An example command to execute similar analysis::
+
+    sortseq scan_model -m my_neighbor_model.txt -s AGACCAGATAGATTATTACCCC -o my_Scan.txt  
+
+
+
+
+.. include:: weblinks.txt
