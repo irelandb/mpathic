@@ -6,9 +6,9 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>preprocess &mdash; sst 0.0.1 documentation</title>
+    <title>preprocess &mdash; sortseq_tools 0.0.1 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -23,37 +23,37 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="sst 0.0.1 documentation" href="index.html" />
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="sortseq_tools 0.0.1 documentation" href="index.html" />
     <link rel="up" title="Programs" href="programs.html" />
-    <link rel="prev" title="Scan" href="Scan.html" /> 
+    <link rel="prev" title="scan_model" href="scan_model.html" /> 
   </head>
-  <body>
-    <div class="related">
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="Scan.html" title="Scan"
+          <a href="scan_model.html" title="scan_model"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">sst 0.0.1 documentation</a> &raquo;</li>
-          <li><a href="programs.html" accesskey="U">Programs</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">sortseq_tools 0.0.1 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="programs.html" accesskey="U">Programs</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="preprocess">
-<span id="id1"></span><h1><a class="toc-backref" href="#id2"><tt class="docutils literal"><span class="pre">preprocess</span></tt></a><a class="headerlink" href="#preprocess" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1><a class="toc-backref" href="#id2"><code class="docutils literal"><span class="pre">preprocess</span></code></a><a class="headerlink" href="#preprocess" title="Permalink to this headline">¶</a></h1>
 <div class="contents topic" id="contents">
 <p class="topic-title first">Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#preprocess" id="id2"><tt class="docutils literal"><span class="pre">preprocess</span></tt></a><ul>
+<li><a class="reference internal" href="#preprocess" id="id2"><code class="docutils literal"><span class="pre">preprocess</span></code></a><ul>
 <li><a class="reference internal" href="#overview" id="id3">Overview</a></li>
 <li><a class="reference internal" href="#command-line-usage" id="id4">Command-line usage</a></li>
 <li><a class="reference internal" href="#examples" id="id5">Examples</a></li>
@@ -63,19 +63,19 @@
 </div>
 <div class="section" id="overview">
 <h2><a class="toc-backref" href="#id3">Overview</a><a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p><tt class="docutils literal"><span class="pre">preprocess</span></tt> is a program within the sortseq_tools package which combines
+<p><code class="docutils literal"><span class="pre">preprocess</span></code> is a program within the sortseq_tools package which combines
 individual tabular data files,FASTA, or FASTQ files and combines them into a
-data format that sortseq can use. All other preprocessing, such as stiching
+data format that sortseq_tools can use. All other preprocessing, such as stitching
 paired end reads together, or filtering based on barcode or quality score, must
 be handled before running this module.</p>
 <p>After you install <a href="#id6"><span class="problematic" id="id7">`sortseq_tools`_</span></a>, this program will be available to run at the command line.</p>
 </div>
 <div class="section" id="command-line-usage">
 <h2><a class="toc-backref" href="#id4">Command-line usage</a><a class="headerlink" href="#command-line-usage" title="Permalink to this headline">¶</a></h2>
-<pre class="literal-block">
-usage: sst preprocess [-h] [-i I] [--tagkeys TAGKEYS] [-o OUT]
-                      [-s {dna,rna,protein}] [-f]
-</pre>
+<div class="highlight-python"><div class="highlight"><pre><span></span>usage: sortseq_tools preprocess [-h] [-i I] [--tagkeys TAGKEYS] [-o OUT]
+                                [-s {dna,rna,protein}] [-f]
+</pre></div>
+</div>
 <dl class="docutils">
 <dt>Options:</dt>
 <dd><table class="first last docutils option-list" frame="void" rules="none">
@@ -111,22 +111,22 @@ usage: sst preprocess [-h] [-i I] [--tagkeys TAGKEYS] [-o OUT]
 the sequences from which bin. The file must contain a &#8216;bin&#8217; column and a &#8216;file&#8217;
 column.</p>
 <p>Example Input Table:</p>
-<div class="highlight-python"><div class="highlight"><pre>bin  file
-0    ~/my_bin_0.fasta
-1    ~/my_bin_1.fasta
+<div class="highlight-python"><div class="highlight"><pre><span></span>bin  file
+0    my_bin_0.fasta
+1    my_bin_1.fasta
 </pre></div>
 </div>
 <p>The output of this module will be a data set in a tabular format that can
 be fed to the rest of the modules in the sortseq program.</p>
 <p>Example Output Table:</p>
-<div class="highlight-python"><div class="highlight"><pre>ct    ct_0     ct_1     ct_2    seq
+<div class="highlight-python"><div class="highlight"><pre><span></span>ct    ct_0     ct_1     ct_2    seq
 13    1        5        7      ACG
 28    8        5        5      GGT
 ...
 </pre></div>
 </div>
 <p>Example command to run the analysis:</p>
-<div class="highlight-python"><div class="highlight"><pre>sortseq preprocess -i my_fileslist.txt -o mydataset.txt --type DNA
+<div class="highlight-python"><div class="highlight"><pre><span></span>sortseq preprocess -i my_fileslist.txt -o mydataset.txt --type DNA
 </pre></div>
 </div>
 </div>
@@ -136,11 +136,11 @@ be fed to the rest of the modules in the sortseq program.</p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">preprocess</span></tt></a><ul>
+<li><a class="reference internal" href="#"><code class="docutils literal"><span class="pre">preprocess</span></code></a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
 <li><a class="reference internal" href="#command-line-usage">Command-line usage</a></li>
 <li><a class="reference internal" href="#examples">Examples</a></li>
@@ -149,14 +149,16 @@ be fed to the rest of the modules in the sortseq program.</p>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="Scan.html"
-                        title="previous chapter"><tt class="docutils literal"><span class="pre">Scan</span></tt></a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/preprocess.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+  <p class="topless"><a href="scan_model.html"
+                        title="previous chapter"><code class="docutils literal"><span class="pre">scan_model</span></code></a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/preprocess.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
@@ -173,22 +175,22 @@ be fed to the rest of the modules in the sortseq program.</p>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="Scan.html" title="Scan"
+          <a href="scan_model.html" title="scan_model"
              >previous</a> |</li>
-        <li><a href="index.html">sst 0.0.1 documentation</a> &raquo;</li>
-          <li><a href="programs.html" >Programs</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">sortseq_tools 0.0.1 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="programs.html" >Programs</a> &raquo;</li> 
       </ul>
     </div>
-    <div class="footer">
+    <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Bill Ireland, Justin Kinney.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.5.
     </div>
   </body>
 </html>
