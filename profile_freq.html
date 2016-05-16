@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>profile_freq &mdash; sortseq_tools 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="sortseq_tools 0.0.1 documentation" href="index.html" />
+    <link rel="up" title="Programs" href="programs.html" />
+    <link rel="next" title="predictiveinfo" href="predictiveinfo.html" />
+    <link rel="prev" title="profile_ct" href="profile_ct.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="predictiveinfo.html" title="predictiveinfo"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="profile_ct.html" title="profile_ct"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">sortseq_tools 0.0.1 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="programs.html" accesskey="U">Programs</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="profile-freq">
+<span id="id1"></span><h1><a class="toc-backref" href="#id2"><code class="docutils literal"><span class="pre">profile_freq</span></code></a><a class="headerlink" href="#profile-freq" title="Permalink to this headline">¶</a></h1>
+<div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#profile-freq" id="id2"><code class="docutils literal"><span class="pre">profile_freq</span></code></a><ul>
+<li><a class="reference internal" href="#overview" id="id3">Overview</a></li>
+<li><a class="reference internal" href="#command-line-usage" id="id4">Command-line usage</a></li>
+<li><a class="reference internal" href="#examples" id="id5">Examples</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="overview">
+<h2><a class="toc-backref" href="#id3">Overview</a><a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">profile_freq</span></code> is a program within the sortseq package which calculates the
+frequency of each base (or amino acid) at each position in the library.</p>
+<p>After you install <a href="#id6"><span class="problematic" id="id7">`sortseq_tools`_</span></a>, this program will be available to run at the command line.</p>
+</div>
+<div class="section" id="command-line-usage">
+<h2><a class="toc-backref" href="#id4">Command-line usage</a><a class="headerlink" href="#command-line-usage" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span></span>usage: sortseq_tools profile_freq [-h] [-b BIN] [-i I] [-s START] [-e END]
+                                  [-o OUT]
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-b</span>, <span class="option">--bin</span></kbd></td>
+<td>Dataset bin to use for counts. If blank, total counts will be used</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-i</span>, <span class="option">--i</span></kbd></td>
+<td>Input file, otherwise input through the standard input.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-s=0</span>, <span class="option">--start=0</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Position to start your analyzed region</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-e</span>, <span class="option">--end</span></kbd></td>
+<td>Position to end your analyzed region</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-o</span>, <span class="option">--out</span></kbd></td>
+<td>Output file, otherwise use standard output.</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<div class="section" id="examples">
+<h2><a class="toc-backref" href="#id5">Examples</a><a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>The input format for this module must be in the standard form.
+The input table must contain a column labeled ct which is the sum
+of counts for each of the sequencing bins (bin_0 through bin_K). The following
+columns should be labeled ct_0 ... ct_K, and should contain the sequencing counts
+for each bin 0 through K. Bin 0 must be the unsorted or unselected bin. If you did
+not sequence the unsorted bin, you should omit column ct_0 and start with ct_1.
+The last column should contain sequence identity. If the sequences are DNA the
+column should be labeled &#8216;seq&#8217;, if they are RNA, the column should be labeled
+&#8216;seq_rna&#8217;, and if they are amino acid sequences they should be labeled &#8216;seq_pro&#8217;.
+Order of columns does matter.</p>
+<p>Example Input Table:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>ct    ct_0     ct_1     ct_2    seq
+13    1        5        7      ACG
+28    8        5        5      GGT
+...
+</pre></div>
+</div>
+<p>The output from this function will display a column with the position, a
+column with mutation rate, and a column with error in calculated mutation rate.</p>
+<p>Example Output Table:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>pos    ct_A     ct_C     ct_G     ct_T
+0      .25      .25      .4       .1
+1      .2       .3      .25      .25
+...
+</pre></div>
+</div>
+<p>Example Command to Run the analysis:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>sortseq profile_freq -i data.txt -o freqs.txt
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal"><span class="pre">profile_freq</span></code></a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#command-line-usage">Command-line usage</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="profile_ct.html"
+                        title="previous chapter"><code class="docutils literal"><span class="pre">profile_ct</span></code></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="predictiveinfo.html"
+                        title="next chapter"><code class="docutils literal"><span class="pre">predictiveinfo</span></code></a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/profile_freq.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="predictiveinfo.html" title="predictiveinfo"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="profile_ct.html" title="profile_ct"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">sortseq_tools 0.0.1 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="programs.html" >Programs</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Bill Ireland, Justin Kinney.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.5.
+    </div>
+  </body>
+</html>
