@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>simulate_sort &mdash; sortseq_tools 0.0.1 documentation</title>
+    <title>profile_freq &mdash; sortseq_tools 0.0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -26,8 +26,8 @@
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="sortseq_tools 0.0.1 documentation" href="index.html" />
     <link rel="up" title="Programs" href="programs.html" />
-    <link rel="next" title="evaluate_model" href="evaluate_model.html" />
-    <link rel="prev" title="simulate_library" href="simulate_library.html" /> 
+    <link rel="next" title="predictiveinfo" href="predictiveinfo.html" />
+    <link rel="prev" title="profile_ct" href="profile_ct.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -37,10 +37,10 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="evaluate_model.html" title="evaluate_model"
+          <a href="predictiveinfo.html" title="predictiveinfo"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="simulate_library.html" title="simulate_library"
+          <a href="profile_ct.html" title="profile_ct"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">sortseq_tools 0.0.1 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="programs.html" accesskey="U">Programs</a> &raquo;</li> 
@@ -52,33 +52,29 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="simulate-sort">
-<span id="id1"></span><h1><a class="toc-backref" href="#id2"><code class="docutils literal"><span class="pre">simulate_sort</span></code></a><a class="headerlink" href="#simulate-sort" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="profile-freq">
+<span id="id1"></span><h1><a class="toc-backref" href="#id2"><code class="docutils literal"><span class="pre">profile_freq</span></code></a><a class="headerlink" href="#profile-freq" title="Permalink to this headline">¶</a></h1>
 <div class="contents topic" id="contents">
 <p class="topic-title first">Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#simulate-sort" id="id2"><code class="docutils literal"><span class="pre">simulate_sort</span></code></a><ul>
+<li><a class="reference internal" href="#profile-freq" id="id2"><code class="docutils literal"><span class="pre">profile_freq</span></code></a><ul>
 <li><a class="reference internal" href="#overview" id="id3">Overview</a></li>
 <li><a class="reference internal" href="#command-line-usage" id="id4">Command-line usage</a></li>
-<li><a class="reference internal" href="#example-input-and-output" id="id5">Example Input and Output</a></li>
+<li><a class="reference internal" href="#examples" id="id5">Examples</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="section" id="overview">
 <h2><a class="toc-backref" href="#id3">Overview</a><a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal"><span class="pre">simulate_sort</span></code> is a program within the sortseq_tools package which simulates
-performing a Sort Seq experiment.</p>
+<p><code class="docutils literal"><span class="pre">profile_freq</span></code> is a program within the sortseq package which calculates the
+frequency of each base (or amino acid) at each position in the library.</p>
 <p>After you install <a href="#id6"><span class="problematic" id="id7">`sortseq_tools`_</span></a>, this program will be available to run at the command line.</p>
 </div>
 <div class="section" id="command-line-usage">
 <h2><a class="toc-backref" href="#id4">Command-line usage</a><a class="headerlink" href="#command-line-usage" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre><span></span>usage: sortseq_tools simulate_sort [-h] [-nm {LogNormal,Normal,None}]
-                                   [-npar NOISEPARAM]
-                                   [-mt {RandomLinear,MAT,NBR}] [-m MODEL]
-                                   [-i I] [-n NBINS] [-sl]
-                                   [-t {dna,rna,protein}] [-s START] [-e END]
-                                   [-o OUT]
+<div class="highlight-python"><div class="highlight"><pre><span></span>usage: sortseq_tools profile_freq [-h] [-b BIN] [-i I] [-s START] [-e END]
+                                  [-o OUT]
 </pre></div>
 </div>
 <dl class="docutils">
@@ -87,50 +83,12 @@ performing a Sort Seq experiment.</p>
 <col class="option" />
 <col class="description" />
 <tbody valign="top">
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">-nm=Normal</span>, <span class="option">--noisemodel=Normal</span></kbd></td>
-</tr>
-<tr><td>&nbsp;</td><td><p class="first">Noise Model to use.</p>
-<p class="last">Possible choices: LogNormal, Normal, None</p>
-</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">-npar=[.2]</span>, <span class="option">--noiseparam=[.2]</span></kbd></td>
-</tr>
-<tr><td>&nbsp;</td><td>
-        Parameters for your noise model, as a list. The required parameters are
-        LogNormal=[autoflouro,scale],Normal=[scale].</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">-mt=MAT</span>, <span class="option">--modeltype=MAT</span></kbd></td>
-</tr>
-<tr><td>&nbsp;</td><td><p class="first">Type of Model to use</p>
-<p class="last">Possible choices: RandomLinear, MAT, NBR</p>
-</td></tr>
 <tr><td class="option-group">
-<kbd><span class="option">-m</span>, <span class="option">--model</span></kbd></td>
-<td>
-        Filename of Model.
-        </td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">-i=False</span>, <span class="option">--i=False</span></kbd></td>
-</tr>
-<tr><td>&nbsp;</td><td>Read input from file instead 
-        of stdin</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">-n=3</span>, <span class="option">--nbins=3</span></kbd></td>
-</tr>
-<tr><td>&nbsp;</td><td>Number of bins to sort into.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">-sl=False</span>, <span class="option">--sequence_library=False</span></kbd></td>
-</tr>
-<tr><td>&nbsp;</td><td>If you
-         would also like to simulate sequencing the library in bin zero, select
-         this option</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">-t=dna</span>, <span class="option">--type=dna</span></kbd></td>
-</tr>
-<tr><td>&nbsp;</td><td><p class="first">Undocumented</p>
-<p class="last">Possible choices: dna, rna, protein</p>
-</td></tr>
+<kbd><span class="option">-b</span>, <span class="option">--bin</span></kbd></td>
+<td>Dataset bin to use for counts. If blank, total counts will be used</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-i</span>, <span class="option">--i</span></kbd></td>
+<td>Input file, otherwise input through the standard input.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">-s=0</span>, <span class="option">--start=0</span></kbd></td>
 </tr>
@@ -140,38 +98,42 @@ performing a Sort Seq experiment.</p>
 <td>Position to end your analyzed region</td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">-o</span>, <span class="option">--out</span></kbd></td>
-<td>Undocumented</td></tr>
+<td>Output file, otherwise use standard output.</td></tr>
 </tbody>
 </table>
 </dd>
 </dl>
 </div>
-<div class="section" id="example-input-and-output">
-<h2><a class="toc-backref" href="#id5">Example Input and Output</a><a class="headerlink" href="#example-input-and-output" title="Permalink to this headline">¶</a></h2>
-<p>The input table to this function must contain a counts (ct) column and a sequences
-column. If the sequences are DNA the
+<div class="section" id="examples">
+<h2><a class="toc-backref" href="#id5">Examples</a><a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>The input format for this module must be in the standard form.
+The input table must contain a column labeled ct which is the sum
+of counts for each of the sequencing bins (bin_0 through bin_K). The following
+columns should be labeled ct_0 ... ct_K, and should contain the sequencing counts
+for each bin 0 through K. Bin 0 must be the unsorted or unselected bin. If you did
+not sequence the unsorted bin, you should omit column ct_0 and start with ct_1.
+The last column should contain sequence identity. If the sequences are DNA the
 column should be labeled &#8216;seq&#8217;, if they are RNA, the column should be labeled
 &#8216;seq_rna&#8217;, and if they are amino acid sequences they should be labeled &#8216;seq_pro&#8217;.
-By default, sequencing the library will also be simulated, and these results
-will be contained in bin 0. The total number of simulated counts will be equal
-to the number of library counts.</p>
+Order of columns does matter.</p>
 <p>Example Input Table:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>ct    seq
-5   AGGTA
-1   AGTTA
+<div class="highlight-python"><div class="highlight"><pre><span></span>ct    ct_0     ct_1     ct_2    seq
+13    1        5        7      ACG
+28    8        5        5      GGT
 ...
 </pre></div>
 </div>
+<p>The output from this function will display a column with the position, a
+column with mutation rate, and a column with error in calculated mutation rate.</p>
 <p>Example Output Table:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>seq    ct    ct_0     ct_1     ct_2 ...
-AGGTA  5     1        2        1
-AGTTA  1     0        1        0
+<div class="highlight-python"><div class="highlight"><pre><span></span>pos    ct_A     ct_C     ct_G     ct_T
+0      .25      .25      .4       .1
+1      .2       .3      .25      .25
 ...
 </pre></div>
 </div>
-<p>The output table will contain the original columns, along with the sorted columns (ct_0, ct_1, ct_2, ...)</p>
-<p>An example command to execute this analysis:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>sortseq_tools simulate_sort -i my_library.txt -nm LogNormal -o my_sorted.txt
+<p>Example Command to Run the analysis:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>sortseq profile_freq -i data.txt -o freqs.txt
 </pre></div>
 </div>
 </div>
@@ -185,24 +147,24 @@ AGTTA  1     0        1        0
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#"><code class="docutils literal"><span class="pre">simulate_sort</span></code></a><ul>
+<li><a class="reference internal" href="#"><code class="docutils literal"><span class="pre">profile_freq</span></code></a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
 <li><a class="reference internal" href="#command-line-usage">Command-line usage</a></li>
-<li><a class="reference internal" href="#example-input-and-output">Example Input and Output</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="simulate_library.html"
-                        title="previous chapter"><code class="docutils literal"><span class="pre">simulate_library</span></code></a></p>
+  <p class="topless"><a href="profile_ct.html"
+                        title="previous chapter"><code class="docutils literal"><span class="pre">profile_ct</span></code></a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="evaluate_model.html"
-                        title="next chapter"><code class="docutils literal"><span class="pre">evaluate_model</span></code></a></p>
+  <p class="topless"><a href="predictiveinfo.html"
+                        title="next chapter"><code class="docutils literal"><span class="pre">predictiveinfo</span></code></a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/simulate_sort.txt"
+      <li><a href="_sources/profile_freq.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -230,10 +192,10 @@ AGTTA  1     0        1        0
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="evaluate_model.html" title="evaluate_model"
+          <a href="predictiveinfo.html" title="predictiveinfo"
              >next</a> |</li>
         <li class="right" >
-          <a href="simulate_library.html" title="simulate_library"
+          <a href="profile_ct.html" title="profile_ct"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">sortseq_tools 0.0.1 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="programs.html" >Programs</a> &raquo;</li> 
