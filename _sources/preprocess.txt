@@ -53,7 +53,7 @@ Example Output Table::
 
 Example command to run the analysis::
 
-   sortseq preprocess -i my_fileslist.txt -o mydataset.txt --type DNA
+   sortseq_tools preprocess -i my_fileslist.txt -o mydataset.txt --type DNA
 
 
 

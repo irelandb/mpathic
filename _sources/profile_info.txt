@@ -54,7 +54,7 @@ The mutual information is given in bits.
 
 An example command to run this analysis is::
 
-    sortseq profile_info -i sorted_library.txt --err --start 20 --end 80 -o info_profile.txt --type DNA
+    sortseq_tools profile_info -i sorted_library.txt --err --start 20 --end 80 -o info_profile.txt --type DNA
     
 
 

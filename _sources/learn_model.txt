@@ -56,6 +56,6 @@ Example Output Table::
 
 Example Command to Run the analysis::
    
-    sortseq learn_model -i data.txt -lm LS --start 3 --end 25
+    sortseq_tools learn_model -i data.txt -lm LS --start 3 --end 25
 
 .. include:: weblinks.txt

@@ -65,12 +65,12 @@ Example Input Table::
 
 Example Output Table::
 
-    info    std
+    info    info_err
     .94     .06
 
 Example command to run the analysis::
 
-   sortseq predictiveinfo -i my_dataset.txt -m my_linear_matrix_model.txt --modeltype MAT --start 5 --end 20
+   sortseq_tools predictiveinfo -i my_dataset.txt -m my_linear_matrix_model.txt --modeltype MAT --start 5 --end 20
 
 
 .. include:: weblinks.txt

@@ -54,6 +54,6 @@ Example Output Table::
 
 Example Command to Run the analysis::
    
-    sortseq profile_ct -i data.txt -o counts.txt
+    sortseq_tools profile_ct -i data.txt -o counts.txt
 
 .. include:: weblinks.txt

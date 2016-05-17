@@ -14,7 +14,7 @@ Programs:
    profile_info
    profile_ct
    profile_freq
-   learn_matrix
+   learn_model
    predictiveinfo
    simulate_library
    simulate_evaluate

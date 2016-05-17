@@ -59,6 +59,6 @@ Example Output Table::
 
 Example Command to Run the analysis::
    
-    sortseq profile_mut --err -i data.txt -o mutrate.txt
+    sortseq_tools profile_mut --err -i data.txt -o mutrate.txt
 
 .. include:: weblinks.txt
