@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>profile_info &mdash; sortseq_tools 0.0.1 documentation</title>
+    <title>profile_info &mdash; MPAthic 0.0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="sortseq_tools 0.0.1 documentation" href="index.html" />
+    <link rel="top" title="MPAthic 0.0.1 documentation" href="index.html" />
     <link rel="up" title="Programs" href="programs.html" />
     <link rel="next" title="profile_ct" href="profile_ct.html" />
     <link rel="prev" title="profile_mut" href="profile_mut.html" /> 
@@ -42,7 +42,7 @@
         <li class="right" >
           <a href="profile_mut.html" title="profile_mut"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">sortseq_tools 0.0.1 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MPAthic 0.0.1 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="programs.html" accesskey="U">Programs</a> &raquo;</li> 
       </ul>
     </div>  
@@ -67,16 +67,16 @@
 </div>
 <div class="section" id="overview">
 <h2><a class="toc-backref" href="#id3">Overview</a><a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal"><span class="pre">profile_info</span></code> is a program within the sortseq_tools package which calculates
+<p><code class="docutils literal"><span class="pre">profile_info</span></code> is a program within the MPAthic package which calculates
 the mutual information between base identity at a given position and expression
 for each position in the given data set. This analysis is best used to identify regions which are important to transcription, such as transcription
 factor binding sites.</p>
-<p>After you install <a href="#id6"><span class="problematic" id="id7">`sortseq_tools`_</span></a>, this program will be available to run at the command line.</p>
+<p>After you install <a href="#id6"><span class="problematic" id="id7">`MPAthic`_</span></a>, this program will be available to run at the command line.</p>
 </div>
 <div class="section" id="command-line-usage">
 <h2><a class="toc-backref" href="#id4">Command-line usage</a><a class="headerlink" href="#command-line-usage" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre><span></span>usage: sortseq_tools profile_info [-h] [-i I] [-s START] [-e END] [-o OUT]
-                                  [-d] [-m {naive,tpm,nsb}] [-p PSEUDOCOUNT]
+<div class="highlight-python"><div class="highlight"><pre><span></span>usage: MPAthic profile_info [-h] [-i I] [-s START] [-e END] [-o OUT] [-d]
+                            [-m {naive,tpm,nsb}] [-p PSEUDOCOUNT]
 </pre></div>
 </div>
 <dl class="docutils">
@@ -143,7 +143,7 @@ label the mRNA counts.</p>
 </div>
 <p>The mutual information is given in bits.</p>
 <p>An example command to run this analysis is:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>sortseq_tools profile_info -i sorted_library.txt --err --start 20 --end 80 -o info_profile.txt --type DNA
+<div class="highlight-python"><div class="highlight"><pre><span></span>MPAthic profile_info -i sorted_library.txt --err --start 20 --end 80 -o info_profile.txt --type DNA
 </pre></div>
 </div>
 </div>
@@ -207,7 +207,7 @@ label the mRNA counts.</p>
         <li class="right" >
           <a href="profile_mut.html" title="profile_mut"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">sortseq_tools 0.0.1 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MPAthic 0.0.1 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="programs.html" >Programs</a> &raquo;</li> 
       </ul>
     </div>

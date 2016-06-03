@@ -8,19 +8,19 @@
 
 Overview
 -------------
-``profile_info`` is a program within the sortseq_tools package which calculates
+``profile_info`` is a program within the MPAthic package which calculates
 the mutual information between base identity at a given position and expression
 for each position in the given data set. This analysis is best used to identify regions which are important to transcription, such as transcription
 factor binding sites.
 
-After you install `sortseq_tools`_, this program will be available to run at the command line. 
+After you install `MPAthic`_, this program will be available to run at the command line. 
 
 Command-line usage
 ---------------------
 .. argparse::
-   :module: sortseq_tools.sortseq_for_doc
+   :module: MPAthic.sortseq_for_doc
    :func: parser
-   :prog: sortseq_tools
+   :prog: MPAthic
    :path: profile_info
 
    
@@ -54,7 +54,7 @@ The mutual information is given in bits.
 
 An example command to run this analysis is::
 
-    sortseq_tools profile_info -i sorted_library.txt --err --start 20 --end 80 -o info_profile.txt --type DNA
+    MPAthic profile_info -i sorted_library.txt --err --start 20 --end 80 -o info_profile.txt --type DNA
     
 
 

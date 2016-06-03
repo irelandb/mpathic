@@ -11,14 +11,14 @@ Overview
 ``profile_mut`` is a program within the sortseq package which calculates the
 mutation rate at each position in the library.
 
-After you install `sortseq_tools`_, this program will be available to run at the command line. 
+After you install `MPAthic`_, this program will be available to run at the command line. 
 
 Command-line usage
 ---------------------
 .. argparse::
-   :module: sortseq_tools.sortseq_for_doc
+   :module: MPAthic.sortseq_for_doc
    :func: parser
-   :prog: sortseq_tools
+   :prog: MPAthic
    :path: profile_mut
 
    
@@ -59,6 +59,6 @@ Example Output Table::
 
 Example Command to Run the analysis::
    
-    sortseq_tools profile_mut --err -i data.txt -o mutrate.txt
+    MPAthic profile_mut --err -i data.txt -o mutrate.txt
 
 .. include:: weblinks.txt

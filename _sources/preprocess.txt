@@ -8,20 +8,20 @@
 
 Overview
 -------------
-``preprocess`` is a program within the sortseq_tools package which combines
+``preprocess`` is a program within the MPAthic package which combines
 individual tabular data files,FASTA, or FASTQ files and combines them into a
-data format that sortseq_tools can use. All other preprocessing, such as stitching
+data format that MPAthic can use. All other preprocessing, such as stitching
 paired end reads together, or filtering based on barcode or quality score, must
 be handled before running this module.
 
-After you install `sortseq_tools`_, this program will be available to run at the command line. 
+After you install `MPAthic`_, this program will be available to run at the command line. 
 
 Command-line usage
 ---------------------
 .. argparse::
-   :module: sortseq_tools.sortseq_for_doc
+   :module: MPAthic.sortseq_for_doc
    :func: parser
-   :prog: sortseq_tools
+   :prog: MPAthic
    :path: preprocess
 
    
@@ -53,7 +53,7 @@ Example Output Table::
 
 Example command to run the analysis::
 
-   sortseq_tools preprocess -i my_fileslist.txt -o mydataset.txt --type DNA
+   MPAthic preprocess -i my_fileslist.txt -o mydataset.txt --type DNA
 
 
 

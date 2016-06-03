@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>predictiveinfo &mdash; sortseq_tools 0.0.1 documentation</title>
+    <title>predictiveinfo &mdash; MPAthic 0.0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="sortseq_tools 0.0.1 documentation" href="index.html" />
+    <link rel="top" title="MPAthic 0.0.1 documentation" href="index.html" />
     <link rel="up" title="Programs" href="programs.html" />
     <link rel="next" title="simulate_library" href="simulate_library.html" />
     <link rel="prev" title="learn_model" href="learn_model.html" /> 
@@ -42,7 +42,7 @@
         <li class="right" >
           <a href="learn_model.html" title="learn_model"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">sortseq_tools 0.0.1 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MPAthic 0.0.1 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="programs.html" accesskey="U">Programs</a> &raquo;</li> 
       </ul>
     </div>  
@@ -67,16 +67,16 @@
 </div>
 <div class="section" id="overview">
 <h2><a class="toc-backref" href="#id3">Overview</a><a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal"><span class="pre">predictiveinfo</span></code> is a program within the sortseq_tools package which computes
+<p><code class="docutils literal"><span class="pre">predictiveinfo</span></code> is a program within the MPAthic package which computes
 the mutual information between a linear or nearest neighbor energy matrix
 model and a data set. Models which are closer to reality will have a
 higher mutual information value.</p>
-<p>After you install <a href="#id6"><span class="problematic" id="id7">`sortseq_tools`_</span></a>, this program will be available to run at the command line.</p>
+<p>After you install <a href="#id6"><span class="problematic" id="id7">`MPAthic`_</span></a>, this program will be available to run at the command line.</p>
 </div>
 <div class="section" id="command-line-usage">
 <h2><a class="toc-backref" href="#id4">Command-line usage</a><a class="headerlink" href="#command-line-usage" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre><span></span>usage: sortseq_tools predictiveinfo [-h] [-ds DATASET] [-mt {MAT,NBR}] [--err]
-                                    [-s START] [-e END] [-m MODEL] [-o OUT]
+<div class="highlight-python"><div class="highlight"><pre><span></span>usage: MPAthic predictiveinfo [-h] [-ds DATASET] [--err] [-s START] [-e END]
+                              [-cg COARSE_GRAINING_LEVEL] [-m MODEL] [-o OUT]
 </pre></div>
 </div>
 <dl class="docutils">
@@ -88,12 +88,6 @@ higher mutual information value.</p>
 <tr><td class="option-group">
 <kbd><span class="option">-ds</span>, <span class="option">--dataset</span></kbd></td>
 <td>Undocumented</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">-mt=MAT</span>, <span class="option">--modeltype=MAT</span></kbd></td>
-</tr>
-<tr><td>&nbsp;</td><td><p class="first">Type of model to be evaluated</p>
-<p class="last">Possible choices: MAT, NBR</p>
-</td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">--err=False</span></kbd></td>
 <td>Flag to use if you want to
@@ -106,6 +100,12 @@ higher mutual information value.</p>
 <tr><td class="option-group">
 <kbd><span class="option">-e</span>, <span class="option">--end</span></kbd></td>
 <td>Position to end your analyzed region</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-cg=0</span>, <span class="option">--coarse_graining_level=0</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>coarse graining
+        level to use for mutual information calculation, higher values will
+        speed up computation</td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">-m</span>, <span class="option">--model</span></kbd></td>
 <td>Model file, otherwise input
@@ -156,7 +156,7 @@ Order of columns does matter.</p>
 </pre></div>
 </div>
 <p>Example command to run the analysis:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>sortseq_tools predictiveinfo -i my_dataset.txt -m my_linear_matrix_model.txt --modeltype MAT --start 5 --end 20
+<div class="highlight-python"><div class="highlight"><pre><span></span>MPAthic predictiveinfo -i my_dataset.txt -m my_linear_matrix_model.txt --modeltype MAT --start 5 --end 20
 </pre></div>
 </div>
 </div>
@@ -220,7 +220,7 @@ Order of columns does matter.</p>
         <li class="right" >
           <a href="learn_model.html" title="learn_model"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">sortseq_tools 0.0.1 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MPAthic 0.0.1 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="programs.html" >Programs</a> &raquo;</li> 
       </ul>
     </div>

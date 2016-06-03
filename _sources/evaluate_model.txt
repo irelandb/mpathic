@@ -8,19 +8,19 @@
 
 Overview
 -------------
-``evaluate_model`` is a program within the sortseq_tools package which 
+``evaluate_model`` is a program within the MPAthic package which 
 uses an energy model to calculate the predicted energies of each sequence in a
 library. It then adds a 'val' column to the tabular data file you input containing
 the predicted energies.
 
-After you install `sortseq_tools`_, this program will be available to run at the command line. 
+After you install `MPAthic`_, this program will be available to run at the command line. 
 
 Command-line usage
 ---------------------
 .. argparse::
-   :module: sortseq_tools.sortseq_for_doc
+   :module: MPAthic.sortseq_for_doc
    :func: parser
-   :prog: sortseq_tools
+   :prog: MPAthic
    :path: evaluate_model
 
    

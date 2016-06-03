@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>preprocess &mdash; sortseq_tools 0.0.1 documentation</title>
+    <title>preprocess &mdash; MPAthic 0.0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="sortseq_tools 0.0.1 documentation" href="index.html" />
+    <link rel="top" title="MPAthic 0.0.1 documentation" href="index.html" />
     <link rel="up" title="Programs" href="programs.html" />
     <link rel="prev" title="scan_model" href="scan_model.html" /> 
   </head>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="scan_model.html" title="scan_model"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">sortseq_tools 0.0.1 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MPAthic 0.0.1 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="programs.html" accesskey="U">Programs</a> &raquo;</li> 
       </ul>
     </div>  
@@ -63,17 +63,17 @@
 </div>
 <div class="section" id="overview">
 <h2><a class="toc-backref" href="#id3">Overview</a><a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal"><span class="pre">preprocess</span></code> is a program within the sortseq_tools package which combines
+<p><code class="docutils literal"><span class="pre">preprocess</span></code> is a program within the MPAthic package which combines
 individual tabular data files,FASTA, or FASTQ files and combines them into a
-data format that sortseq_tools can use. All other preprocessing, such as stitching
+data format that MPAthic can use. All other preprocessing, such as stitching
 paired end reads together, or filtering based on barcode or quality score, must
 be handled before running this module.</p>
-<p>After you install <a href="#id6"><span class="problematic" id="id7">`sortseq_tools`_</span></a>, this program will be available to run at the command line.</p>
+<p>After you install <a href="#id6"><span class="problematic" id="id7">`MPAthic`_</span></a>, this program will be available to run at the command line.</p>
 </div>
 <div class="section" id="command-line-usage">
 <h2><a class="toc-backref" href="#id4">Command-line usage</a><a class="headerlink" href="#command-line-usage" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre><span></span>usage: sortseq_tools preprocess [-h] [-i I] [--tagkeys TAGKEYS] [-o OUT]
-                                [-s {dna,rna,protein}] [-f]
+<div class="highlight-python"><div class="highlight"><pre><span></span>usage: MPAthic preprocess [-h] [-i I] [--tagkeys TAGKEYS] [-o OUT]
+                          [-s {dna,rna,protein}] [-f]
 </pre></div>
 </div>
 <dl class="docutils">
@@ -127,7 +127,7 @@ be fed to the rest of the modules in the sortseq program.</p>
 </pre></div>
 </div>
 <p>Example command to run the analysis:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>sortseq_tools preprocess -i my_fileslist.txt -o mydataset.txt --type DNA
+<div class="highlight-python"><div class="highlight"><pre><span></span>MPAthic preprocess -i my_fileslist.txt -o mydataset.txt --type DNA
 </pre></div>
 </div>
 </div>
@@ -185,7 +185,7 @@ be fed to the rest of the modules in the sortseq program.</p>
         <li class="right" >
           <a href="scan_model.html" title="scan_model"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">sortseq_tools 0.0.1 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MPAthic 0.0.1 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="programs.html" >Programs</a> &raquo;</li> 
       </ul>
     </div>

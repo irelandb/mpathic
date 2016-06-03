@@ -11,14 +11,14 @@ Overview
 ``profile_freq`` is a program within the sortseq package which calculates the
 frequency of each base (or amino acid) at each position in the library.
 
-After you install `sortseq_tools`_, this program will be available to run at the command line. 
+After you install `MPAthic`_, this program will be available to run at the command line. 
 
 Command-line usage
 ---------------------
 .. argparse::
-   :module: sortseq_tools.sortseq_for_doc
+   :module: MPAthic.sortseq_for_doc
    :func: parser
-   :prog: sortseq_tools
+   :prog: MPAthic
    :path: profile_freq
    
 Examples

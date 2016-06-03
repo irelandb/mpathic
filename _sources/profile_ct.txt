@@ -11,14 +11,14 @@ Overview
 ``profile_ct`` is a program within the sortseq package which calculates the
 counts of each base (or amino acid) at each position in the library.
 
-After you install `sortseq_tools`_, this program will be available to run at the command line. 
+After you install `MPAthic`_, this program will be available to run at the command line. 
 
 Command-line usage
 ---------------------
 .. argparse::
-   :module: sortseq_tools.sortseq_for_doc
+   :module: MPAthic.sortseq_for_doc
    :func: parser
-   :prog: sortseq_tools
+   :prog: MPAthic
    :path: profile_ct
    
 Examples
@@ -54,6 +54,6 @@ Example Output Table::
 
 Example Command to Run the analysis::
    
-    sortseq_tools profile_ct -i data.txt -o counts.txt
+    MPAthic profile_ct -i data.txt -o counts.txt
 
 .. include:: weblinks.txt

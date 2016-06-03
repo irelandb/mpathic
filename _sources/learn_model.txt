@@ -8,20 +8,20 @@
 
 Overview
 -------------
-``learn_model`` is a program within the sortseq_tools package which generates
+``learn_model`` is a program within the MPAthic package which generates
 linear or nearest neighbor energy matrix models for sections of a sorted library.
 These models can be learned using four methods, designated by using -lm METHOD.
 You can choose from Berg Von Hippel (-lm ER), least squares (-lm LS),
  or mutual information maximization (-lm IM).
 
-After you install `sortseq_tools`_, this program will be available to run at the command line. 
+After you install `MPAthic`_, this program will be available to run at the command line. 
 
 Command-line usage
 ---------------------
 .. argparse::
-   :module: sortseq_tools.sortseq_for_doc
+   :module: MPAthic.sortseq_for_doc
    :func: parser
-   :prog: sortseq_tools
+   :prog: MPAthic
    :path: learn_model
 
    
@@ -56,6 +56,6 @@ Example Output Table::
 
 Example Command to Run the analysis::
    
-    sortseq_tools learn_model -i data.txt -lm LS --start 3 --end 25
+    MPAthic learn_model -i data.txt -lm LS --start 3 --end 25
 
 .. include:: weblinks.txt

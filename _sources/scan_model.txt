@@ -8,18 +8,18 @@
 
 Overview
 -------------
-``scan_model`` is a program within the sortseq_tools package which evaluates a given energy
+``scan_model`` is a program within the MPAthic package which evaluates a given energy
 model on all possible positions within a supplied wild type sequence. It will then
 display the sequences in order of binding energy.
 
-After you install `sortseq_tools`_, this program will be available to run at the command line. 
+After you install `MPAthic`_, this program will be available to run at the command line. 
 
 Command-line usage
 ---------------------
 .. argparse::
-   :module: sortseq_tools.sortseq_for_doc
+   :module: MPAthic.sortseq_for_doc
    :func: parser
-   :prog: sortseq_tools
+   :prog: MPAthic
    :path: scan_model
 
    
@@ -49,7 +49,7 @@ And the output will be of the form::
 
 An example command to execute similar analysis::
 
-    sortseq_tools scan_model -m my_neighbor_model.txt -s AGACCAGATAGATTATTACCCC -o my_Scan.txt  
+    MPAthic scan_model -m my_neighbor_model.txt -s AGACCAGATAGATTATTACCCC -o my_Scan.txt  
 
 
 
