@@ -26,23 +26,54 @@ def weighted_std(values,weights):
 def add_label(s):
     return 'ct_' + str(s)    
 
-def MaximizeMI_test(
-        seq_mat,df,emat_0,db=None,burnin=1000,iteration=30000,thin=10,
-        runnum=0): 
-    '''Performs MI maximization using pymc, this function is used if the learning
-    method lm=mi is used'''
-    @pymc.stochastic(observed=True,dtype=int)
-    def sequences(value=seq_mat):
-        return 0
-    @pymc.stochastic(observed=True,dtype=pd.DataFrame)
-    def pymcdf(value=df):
-        return 0
-    @pymc.stochastic(dtype=float)
-    def emat(s=sequences,p=pymcdf,value=emat_0):
+#def MaximizeMI_test(
+#        seq_mat,df,emat_0,db=None,burnin=1000,iteration=30000,thin=10,
+#       runnum=0): 
+#    '''Performs MI maximization using pymc, this function is used if the learning
+#   method lm=mi is used'''
+#    @pymc.stochastic(observed=True,dtype=int)
+#    def sequences(value=seq_mat):
+#        return 0
+#    @pymc.stochastic(observed=True,dtype=pd.DataFrame)
+#    def pymcdf(value=df):
+#        return 0
+#    @pymc.stochastic(dtype=float)
+#    def emat(s=sequences,p=pymcdf,value=emat_0):
+#        '''Evaluate the log likelihood of this model.
+#        This is calculated according to the method explained in Kinney et al(2010).               
+#        The log likelihood is the number of sequences multiplied by the 
+#        mutual information between model predictions and data.'''
+#        dot = value[:,:,sp.newaxis]*s
+#        p['val'] = dot.sum(0).sum(0)                    
+#        df_sorted = p.sort(columns='val')
+#        df_sorted.reset_index(inplace=True)
+#        n_seqs = s.shape[2]     
+#        MI = EstimateMutualInfoforMImax.alt2(df_sorted)
+#        return n_seqs*MI
+#    if db:
+#        dbname = db + '_' + str(runnum) + '.sql'
+#	M = pymc.MCMC([sequences,pymcdf,emat],db='sqlite',dbname=dbname)
+#    else:
+#	M = pymc.MCMC([sequences,pymcdf,emat])
+#    M.use_step_method(stepper.GaugePreservingStepper,emat)
+#    M.sample(iteration,thin=thin)
+#    emat_mean = np.mean(M.trace('emat')[burnin:],axis=0)
+#    return emat_mean
+
+#Now implement with pymc3
+
+#define classes we'll need
+
+class emat(pymc.Continuous):
+    def __init__(self,seq_mat,pymcdf):
+        self.seq_mat = seq_mat
+        self.pymcdf = pymcdf
+
+    def logp(self,value):
         '''Evaluate the log likelihood of this model.
-        This is calculated according to the method explained in Kinney et al(2010).               
-        The log likelihood is the number of sequences multiplied by the 
-        mutual information between model predictions and data.'''
+#        This is calculated according to the method explained in Kinney et al(2010).               
+#        The log likelihood is the number of sequences multiplied by the 
+#        mutual information between model predictions and data.'''
         dot = value[:,:,sp.newaxis]*s
         p['val'] = dot.sum(0).sum(0)                    
         df_sorted = p.sort(columns='val')
@@ -50,16 +81,11 @@ def MaximizeMI_test(
         n_seqs = s.shape[2]     
         MI = EstimateMutualInfoforMImax.alt2(df_sorted)
         return n_seqs*MI
-    if db:
-        dbname = db + '_' + str(runnum) + '.sql'
-	M = pymc.MCMC([sequences,pymcdf,emat],db='sqlite',dbname=dbname)
-    else:
-	M = pymc.MCMC([sequences,pymcdf,emat])
-    M.use_step_method(stepper.GaugePreservingStepper,emat)
-    M.sample(iteration,thin=thin)
-    emat_mean = np.mean(M.trace('emat')[burnin:],axis=0)
-    return emat_mean
+        
 
+def MaximizeMI_test(
+        seq_mat,df,emat_0,db=None,burnin=1000,iteration=30000,thin=10,
+        runnum=0):
 def MaximizeMI_memsaver(
         seq_mat,df,emat_0,db=None,burnin=1000,iteration=30000,thin=10,
         runnum=0):
