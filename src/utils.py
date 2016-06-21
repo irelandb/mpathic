@@ -4,12 +4,52 @@ import numpy as np
 import scipy as sp
 import scipy.ndimage
 import pandas as pd
+from mpathic import SortSeqError
+
+
+def profile_counts(df,dicttype,wtseq=None,return_wtseq=False,bin_k=None,start=0,end=None):
+    type_name_dict = {'dna':'seq','rna':'seq_rna','protein':'seq_pro'}
+    seq_col_name = type_name_dict[dicttype]
+    seq_dict,inv_dict = choose_dict(dicttype)
+    strings = df[seq_col_name].str.slice(start,end)
+    #if no counts column, then assume counts = 1
+    if bin_k is not None:
+         ct = df['ct_'+str(bin_k)]
+    else:
+         ct = df['ct']
+    seqL = len(strings[0])
+    mutfreq = np.zeros([seqL,len(seq_dict)])
+    #Dictionary with number corresponding to each base
+    wttest = []
+    for i in range(seqL):
+        #at this position make list of each base
+        letlist = strings.str.slice(i,i+1)
+        #tally the number of each
+        counts = [np.sum(ct[letlist==inv_dict[q]]) for q in range(len(seq_dict))]
+        wtlet = np.argmax(counts)
+        wttest.append(inv_dict[wtlet])
+        mutfreq[i,:] = counts
+    if wtseq:
+        assert(wtseq==wttest)
+    if not is_seq_valid(wttest,seq_dict):
+        sys.exit('Wild type seq is invalid')
+    cols = ['ct_' + str(inv_dict[q]) for q in range(len(seq_dict))]
+    mf = pd.DataFrame(mutfreq,columns=cols)
+    pos = pd.Series(range(seqL),name='pos')
+    output_df = pd.concat([pos,mf],axis=1)
+    #we can use this function for obtaining the wtseq of our library
+    if return_wtseq:
+        return wttest
+    else:
+        return output_df
 
 def profile_freqs(df,dicttype,wtseq=None,bin_k=0):
     '''calculate the frequency of each base at each position for a given bin
         in a dataframe.'''
-    seq_dict,inv_dict = utils.choose_dict(dicttype)
-    strings = df['seq']
+    type_name_dict = {'dna':'seq','rna':'seq_rna','protein':'seq_pro'}
+    seq_col_name = type_name_dict[dicttype]
+    seq_dict,inv_dict = choose_dict(dicttype)
+    strings = df[seq_col_name]
     ct = df['ct_'+str(bin_k)]
     
     seqL = len(strings[0])
@@ -27,7 +67,7 @@ def profile_freqs(df,dicttype,wtseq=None,bin_k=0):
     
     if wtseq:
         assert(wtseq==wttest)
-    if not utils.is_seq_valid(wttest,seq_dict):
+    if not is_seq_valid(wttest,seq_dict):
         sys.exit('Wild type seq is invalid')
     cols = ['freq_' + str(inv_dict[q]) for q in range(len(seq_dict))]
     mf = pd.DataFrame(mutfreq,columns=cols)
@@ -44,20 +84,23 @@ def sample(weights,T_counts):
     resampled_lib = np.random.poisson(lam=emean)
     return resampled_lib
     
-def choose_dict(dicttype,modeltype='LinearEmat'):
+def choose_dict(dicttype,modeltype='MAT'):
     '''Get numbering dictionary for either dna,rna, or proteins'''
     if dicttype == 'dna':
         seq_dict = {'A':0,'C':1,'G':2,'T':3}
         inv_dict = {0:'A',1:'C',2:'G',3:'T'}
-    if dicttype == 'rna':
+    elif dicttype == 'rna':
         seq_dict = {'A':0,'C':1,'G':2,'U':3}
         inv_dict = {0:'A',1:'C',2:'G',3:'U'}
-    if dicttype == 'protein':
+    elif dicttype == 'protein':
         seq_dict = {
             '*':0,'A':1,'C':2,'D':3,'E':4,'F':5,'G':6,'H':7,'I':8,'K':9,'L':10,
             'M':11,'N':12,'P':13,'Q':14,'R':15,'S':16,'T':17,'V':18,'W':19,'Y':20}
         inv_dict = {v:k for k,v in seq_dict.items()}
-    if modeltype == 'Neighbor':
+    else:
+        raise SortSeqError('Unkonwn dicttype: %s'%dicttype)
+
+    if modeltype == 'NBR':
         seq_dict = {
             ''.join([inv_dict[i],inv_dict[z]]):i*len(seq_dict)+z 
             for i in range(len(seq_dict)) for z in range(len(seq_dict))}
@@ -71,25 +114,32 @@ def get_column_headers(df,exptype=None):
 def collapse(df):
     '''Takes a list of sequences and batch numbers and returns DataFrame with seq, 
         ct, ct_0...ct_K. this only works for SortSeq type experiments'''
+    #automatically pick the column name for the sequences
+    seq_col_name = [x for x in df.columns if 'seq' in x][0]
     # index them starting at 1
     df['batch'] = df['batch']-df['batch'].min() + 1
     output_df = pd.DataFrame()
     for i in range(1, df['batch'].max() + 1):
-        thisbatch = df['seq'][df['batch']==i]
+        thisbatch = df[seq_col_name][df['batch']==i]
         output_df = pd.concat(
             [output_df,pd.Series(thisbatch.value_counts(),name='ct_'+str(i))],
             axis=1)
     batches = ['ct_' + str(i) for i in range(1, df['batch'].max()+1)]
     output_df['ct'] = np.sum(output_df[batches],axis=1)
     output_df = output_df.reset_index()
-    output_df = output_df.rename(columns = {'index':'seq'})
+    output_df = output_df.rename(columns = {'index':seq_col_name})
     output_df = output_df.fillna(0)
     return output_df
 
 def collapse_further(df):
     '''take clipped df and then collapse it further'''
-    output_df = df.groupby('seq').sum()
+    #automatically pick the column name for the sequences
+    seq_col_name = [x for x in df.columns if 'seq' in x][0]
+    output_df = df.groupby(seq_col_name).sum()
     output_df = output_df.reset_index()
+    #now reorder columns so we have 'ct' first and 'seq' last
+    ct_columns = [x for x in df.columns if 'ct' in x]
+    output_df = output_df[ct_columns + [seq_col_name]]
     #The evaluated column will now be incorrect, so we should delete it.
     try:
         output_df = output_df.drop('val',axis=1)
@@ -163,9 +213,11 @@ def remove_linear_elements(emat,seq_L):
             emat[index*15+12:index*15 + 15] = emat[index*15+12:index*15 + 15] - emat[index*15+12:index*15 + 15].mean()
     return emat
 
-def load_seqs_batches_pairwise(df,seq_dict):
-    n_seqs = len(df['seq'])    
-    mut_region_length = len(df['seq'][0])
+def load_seqs_batches_pairwise(df,seq_dict,dicttype):
+    type_name_dict = {'dna':'seq','rna':'seq_rna','protein':'seq_pro'}
+    seq_col_name = type_name_dict[dicttype]
+    n_seqs = len(df[seq_col_name])    
+    mut_region_length = len(df[seq_col_name][0])
     #Find bin number    
     binheaders = get_column_headers(df)
     nbins = len(binheaders)
@@ -177,7 +229,7 @@ def load_seqs_batches_pairwise(df,seq_dict):
     counter = 0
     
     batch = np.zeros(nentries,dtype=int)
-    for i,s in enumerate(df['seq']):
+    for i,s in enumerate(df[seq_col_name]):
         for z in range(nbins):
              for q in range(df[binheaders[z]][i]):
                  seq_mat[:,:,counter] = seq2matpair(s,seq_dict)
@@ -198,13 +250,14 @@ def shuffle_rank(expression,y):
     rankexpression[temp] = np.arange(len(expressiontemp))/len(y)       
     return rankexpression,batchtemp
 
-def genlassomat(df,modeltype,seq_dict): 
+def genlassomat(df,modeltype,seq_dict,dicttype): 
     '''generates a paramaterized form of the sequence in a csr matrix. This is for
-        use in learn_matrix for lasso mat'''
-    
+        use in learn_model for lasso mat'''
+    type_name_dict = {'dna':'seq','rna':'seq_rna','protein':'seq_pro'}
+    seq_col_name = type_name_dict[dicttype]
     n_seqs = int(np.sum(df['ct']))
     batch = np.zeros(n_seqs,dtype=int)
-    mut_region_length = len(df['seq'][0])
+    mut_region_length = len(df[seq_col_name][0])
     #Find bin number    
     nbins = 0    
     include = True
@@ -219,7 +272,7 @@ def genlassomat(df,modeltype,seq_dict):
             lasso_mat = sp.sparse.lil_matrix(
                 (n_seqs,len(seq_dict)*mut_region_length))
             counter=0
-            for i,s in enumerate(df['seq']):
+            for i,s in enumerate(df[seq_col_name]):
                 seqlist = seq2matsparse(s,seq_dict)
                 for bnum, bh in enumerate(binheaders):
                     for c in range(df[bh][i]):
@@ -270,28 +323,29 @@ def format_string(x):
     '''This is how we control the format of our output DFs. It will be float format'''
     return '%10.6f' %x
 
-def genweightandmat(weights_df,seq_dict,means=None,modeltype='LinearEmat'):
-    '''For use with learn_matrix, linear regressions. Generates a flattened
+def genweightandmat(weights_df,seq_dict,dicttype,means=None,modeltype='MAT'):
+    '''For use with learn_model, linear regressions. Generates a flattened
          matrix representation of the sequences, with corresponding batch and 
          number of counts (in sequence weighting vector)'''
-    
-    n_seqs = len(weights_df['seq'])    
-    mut_region_length = len(weights_df['seq'][0])
+    type_name_dict = {'dna':'seq','rna':'seq_rna','protein':'seq_pro'}
+    seq_col_name = type_name_dict[dicttype]
+    n_seqs = len(weights_df[seq_col_name])    
+    mut_region_length = len(weights_df[seq_col_name][0])
     binheaders = get_column_headers(weights_df)
     nbins=len(binheaders)
     
-    if modeltype == 'LinearEmat':
+    if modeltype == 'MAT':
          lasso_mat = sp.sparse.lil_matrix((n_seqs,len(seq_dict)*mut_region_length))
-    elif modeltype == 'Neighbor':
+    elif modeltype == 'NBR':
          lasso_mat = sp.sparse.lil_matrix((n_seqs,len(seq_dict)*(mut_region_length-1)))
     counter = 0
     sample_weights = np.zeros(n_seqs)
     batch = np.zeros(n_seqs)
     
-    for i,s in enumerate(weights_df['seq']):
-             if modeltype == 'LinearEmat':
+    for i,s in enumerate(weights_df[seq_col_name]):
+             if modeltype == 'MAT':
                  lasso_mat[i,:] = seq2matsparse(s,seq_dict)
-             elif modeltype == 'Neighbor':
+             elif modeltype == 'NBR':
                  lasso_mat[i,:] = seq2mat_sparse_neighbor(s,seq_dict)
              else:
                   raise ValueError('Incorrect Model Type')
@@ -305,10 +359,12 @@ def genweightandmat(weights_df,seq_dict,means=None,modeltype='LinearEmat'):
              
     return sp.sparse.csr_matrix(lasso_mat),batch,sample_weights
 
-def array_seqs_weights(df,seq_dict):
+def array_seqs_weights(df,dicttype,seq_dict):
     '''This is for use with MCMC routines'''
-    n_seqs = len(df['seq'])    
-    mut_region_length = len(df['seq'][0])
+    type_name_dict = {'dna':'seq','rna':'seq_rna','protein':'seq_pro'}
+    seq_col_name = type_name_dict[dicttype]
+    n_seqs = len(df[seq_col_name])    
+    mut_region_length = len(df[seq_col_name][0])
     #Find bin number    
     binheaders = get_column_headers(df)
     nbins = len(binheaders)
@@ -320,7 +376,7 @@ def array_seqs_weights(df,seq_dict):
     counter = 0
     
     batch = np.zeros(nentries,dtype=int)
-    for i,s in enumerate(df['seq']):
+    for i,s in enumerate(df[seq_col_name]):
         for z in range(nbins):
              for q in range(df[binheaders[z]][i]):
                  seq_mat[:,:,counter] = seq2mat(s,seq_dict)
@@ -375,7 +431,7 @@ def parameterize_seq(seq,seq_dict):
 def emat_typical_parameterization(emat,Ldict):
     '''Takes a parameterized emat (3xL_seq), and returns a 'typical' 
         energy matrix(4xL), with unit norm and average energy 0'''
-    L = len(emat)/(Ldict-1)
+    L = int(len(emat)/(Ldict-1))
     emat = emat.reshape([(Ldict-1),L],order='F')
     zmat = np.zeros(L)
     emat = np.vstack([emat,zmat])

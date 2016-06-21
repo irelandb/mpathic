@@ -13,12 +13,12 @@ import pandas as pd
 #Our miscellaneous functions
 #This module will allow us to easily tally the letter counts at a particular position
 
-import mpathic.utils as utils
-import mpathic.EstimateMutualInfoforMImax as EstimateMutualInfoforMImax
-import mpathic.qc as qc
-import mpathic.numerics as numerics
-from mpathic import SortSeqError
-import mpathic.io as io
+import MPAthic.utils as utils
+import MPAthic.EstimateMutualInfoforMImax as EstimateMutualInfoforMImax
+import MPAthic.qc as qc
+import MPAthic.numerics as numerics
+from MPAthic import SortSeqError
+import MPAthic.io as io
 
 
 def main(
@@ -54,6 +54,7 @@ def main(
     model_df_headers = ['val_' + str(inv_dict[i]) for i in range(len(seq_dict))]
     value = np.transpose(np.array(model_df[model_df_headers]))  
     #now we evaluate the expression of each sequence according to the model.
+    print data_df
     seq_mat,wtrow = numerics.dataset2mutarray(data_df.copy(),modeltype)
     temp_df = data_df.copy()
     temp_df['val'] = numerics.eval_modelmatrix_on_mutarray(np.array(model_df[model_df_headers]),seq_mat,wtrow) 
