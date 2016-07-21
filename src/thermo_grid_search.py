@@ -27,7 +27,7 @@ def eval_MI(s):
     MI  = EstimateMutualInfoforMImax.alt4(temp_df)
     return MI
     
-def main(model_df, contig_list, numsites=10, verbose=False):
+def main(data_df,model_df, contig_list, numsites=10, verbose=False):
     grid_counts = 100
     binheaders = utils.get_column_headers(df)
     #calc the values
@@ -43,7 +43,7 @@ def main(model_df, contig_list, numsites=10, verbose=False):
     energy_add = np.linspace(energy_add_start,energy_add_end,grid_counts)
     rnap_add = np.linspace(rnap_add_start,rnap_add_end,grid_counts)
     #dot product with energymult to produce 2-d array
-    the_array = np.dot(vals,energy_mult)
+    the_array = np.dot(vals.reshape((len(vals),1)),energy_mult.reshape((1,len(energy_mult))))
     #now tile array
     the_array = the_array[:,:,np.newaxis].repeat(grid_counts,2)
     #add energy addition point to array

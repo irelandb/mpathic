@@ -13,9 +13,11 @@ import sst.utils as utils
 from sklearn import linear_model
 import sst.EstimateMutualInfoforMImax as EstimateMutualInfoforMImax
 import pymc
+import pymc3
 import sst.stepper as stepper
 #The profile_counts module also allows us to determine wt sequence
 import sst.gauge_fix as gauge_fix
+import theano.tensor as T
 
 def weighted_std(values,weights):
     '''Takes in a dataframe with seqs and cts and calculates the std'''
@@ -64,28 +66,50 @@ def add_label(s):
 
 #define classes we'll need
 
-class emat(pymc.Continuous):
-    def __init__(self,seq_mat,pymcdf):
-        self.seq_mat = seq_mat
-        self.pymcdf = pymcdf
-
+class emat(pymc3.Continuous):
+    def __init__(self, *args, **kwargs):
+        super(emat, self).__init__(*args, **kwargs)
+        #self.seq_mat = seq_mat
+        #self.pymcdf = pymcdf
     def logp(self,value):
         '''Evaluate the log likelihood of this model.
 #        This is calculated according to the method explained in Kinney et al(2010).               
 #        The log likelihood is the number of sequences multiplied by the 
 #        mutual information between model predictions and data.'''
-        dot = value[:,:,sp.newaxis]*s
-        p['val'] = dot.sum(0).sum(0)                    
-        df_sorted = p.sort(columns='val')
-        df_sorted.reset_index(inplace=True)
-        n_seqs = s.shape[2]     
-        MI = EstimateMutualInfoforMImax.alt2(df_sorted)
-        return n_seqs*MI
+        #dot_prod = f(value)
+        #pymcdf['val'] = dot_prod.sum(0).sum(0)                    
+        #df_sorted = pymcdf.sort(columns='val')
+        #df_sorted.reset_index(inplace=True)     
+        #MI = EstimateMutualInfoforMImax.alt4(df_sorted)
+        return n_seqs*emat_logp(value)
+
+#compute theano dot
+em = T.dmatrix('em')
+dot = em[:,:,sp.newaxis]*seq_mat
+f = function([em],dot)
+
+@theano.as_op(itypes=[T.dmatrix], otypes=[T.dscalar])
+def emat_logp(value):
+        dot = value[:,:,sp.newaxis]*seq_mat
+        print dot
+        pymcdf['val'] = dot.sum(0).sum(0)                      
+        MI = EstimateMutualInfoforMImax.alt4(pymcdf.copy())
+        return MI
         
 
 def MaximizeMI_test(
         seq_mat,df,emat_0,db=None,burnin=1000,iteration=30000,thin=10,
         runnum=0):
+    model = pymc3.Model()
+    with pymc3.Model() as model:
+         emat_for_model = emat(seq_mat,df)
+    with model:
+        start = emat_0
+        step = pymc3.NUTS(state=start)
+        trace = pymc3.trace(100,step,start=start)
+    #now gauge fix each step and take mean
+    
+    
 def MaximizeMI_memsaver(
         seq_mat,df,emat_0,db=None,burnin=1000,iteration=30000,thin=10,
         runnum=0):
@@ -292,7 +316,8 @@ def main(
             seq_mat = np.zeros([len(seq_dict),len(df['seq'][0]),len(df.index)],dtype=int)
             for i in range(len(df.index)):
                 seq_mat[:,:,i] = utils.seq2mat(df['seq'][i],seq_dict)
-            #pymc doesn't take sparse mat        
+            #pymc doesn't take sparse mat
+        n_seqs = seq_mat.shape[2]        
         emat = MaximizeMI_test(
                 seq_mat,df,emat_0,db=db,iteration=iteration,burnin=burnin,
                 thin=thin,runnum=runnum)
