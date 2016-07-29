@@ -8,10 +8,10 @@ Installation
 
 Installation using pip:
 ---------------------------------------
-The easiest way to install MPAthic is to download it from PyPi. You can 
+The easiest way to install MPAthic is to download using anaconda. You can 
 do this using the command::
 
-    pip install MPAthic
+    conda install mpathic -c wireland
 
 Alternatively you can download the source code from github from the github repo
 located at https://github.com/jbkinney/sortseq.git and unzip the file.
