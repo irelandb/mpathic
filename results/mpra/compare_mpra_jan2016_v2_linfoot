@@ -1,0 +1,15 @@
+Training/Test  MPRA_Train  MPRA_Test
+     Neighbor_LS_Rep1    0.123377   0.073967
+     MCMC_Linear_Rep1    0.132643   0.079828
+       Linear_LS_Rep1    0.123715   0.073955
+             dms_Rep1    0.130006   0.078256
+Rep1_ratio_estimation    0.130006   0.078257
+             BVH_Rep1    0.130007   0.078257
+         Induced_QSAM    0.130804   0.079142
+       Uninduced_QSAM    0.026700   0.016029
+     Neighbor_LS_Rep2    0.121051   0.074205
+     MCMC_Linear_Rep2    0.132046   0.080252
+       Linear_LS_Rep2    0.122574   0.074325
+             BVH_Rep2    0.128367   0.078150
+Rep2_ratio_estimation    0.128369   0.078150
+             dms_Rep2    0.128369   0.078150

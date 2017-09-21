@@ -17,7 +17,19 @@ import mpathic.qc as qc
 import mpathic.io as io
 from mpathic import SortSeqError
 from mpathic import shutthefuckup
+import mpathic.numerics as numerics
 
+def split_pos_start(s):
+    '''Takes in pair position (given as base1_of_pair.base2_of_pair) and
+       splits it out into two'''
+    s_split = str(s).split('.')
+    return int(s_split[0])
+
+def split_pos_end(s):
+    '''Takes in pair position (given as base1_of_pair.base2_of_pair) and
+       splits it out into two and returns end'''
+    s_split = str(s).split('.')
+    return int(s_split[1])
 
 def main(dataset_df,model_df,left=None,right=None):
 
@@ -32,15 +44,33 @@ def main(dataset_df,model_df,left=None,right=None):
     # Set start and end  based on left or right
     if not ((left is None) or (right is None)):
         raise SortSeqError('Cannot set both left and right at same time.')
+
     if not (left is None):
         start = left
-        end = start + model_df.shape[0] + (1 if modeltype=='NBR' else 0)
+        if modeltype == 'PAIR':
+            #find out how many unique numbers there are in the model
+            pos_col = pd.DataFrame()
+            pos_col.loc[:,'start'] = model_df['pos'].apply(split_pos_start)
+            pos_col.loc[:,'end'] = model_df['pos'].apply(split_pos_end)
+            end = start + pos_col.loc[:,'end'].max() - pos_col.loc[:,'start'].min() + 1
+        else:    
+            end = start + model_df.shape[0] + (1 if modeltype=='NBR' else 0)
+
     elif not (right is None):
         end = right 
-        start = end - model_df.shape[0] - (1 if modeltype=='NBR' else 0)
+        if modeltype == 'PAIR':
+            #find out how many unique numbers there are in the model
+            pos_col = pd.DataFrame(columns=['start','end'])
+            pos_col.loc[:,'start'] = model_df['pos'].apply(split_pos)[0]
+            pos_col.loc[:,'end'] = model_df['pos'].apply(split_pos)[1]
+            start = end - pos_col.loc[:,'end'].max() + pos_col.loc[:,'start'].min()
+        else:    
+            start = end - model_df.shape[0] - (1 if modeltype=='NBR' else 0) - 1  
+
     else:
         start = model_df['pos'].values[0]
         end = model_df['pos'].values[-1] + (2 if modeltype=='NBR' else 1)
+
     assert start < end 
 
     # Validate start and end positions
@@ -52,20 +82,27 @@ def main(dataset_df,model_df,left=None,right=None):
 
     #select target sequence region
     out_df = dataset_df.copy()
-    out_df.loc[:,seqcol] = out_df.loc[:,seqcol].str.slice(start,end)
-
+    dataset_df.loc[:,seqcol] = dataset_df.loc[:,seqcol].str.slice(start,end)
+    headers = qc.get_cols_from_df(model_df,'vals')
     #Create model object of correct type
     if modeltype == 'MAT':
-        mymodel = Models.LinearModel(model_df)
+        seq_mat,wtrow = numerics.dataset2mutarray(dataset_df.copy(),modeltype)
+        out_df['val'] = numerics.eval_modelmatrix_on_mutarray(
+            np.array(model_df[headers]),seq_mat,wtrow)
     elif modeltype == 'NBR':
-        mymodel = Models.NeighborModel(model_df)
+        seq_mat,wtrow = numerics.dataset2mutarray(dataset_df.copy(),modeltype)
+        out_df['val'] = numerics.eval_modelmatrix_on_mutarray(
+            np.array(model_df[headers]),seq_mat,wtrow)
+    elif modeltype == 'PAIR':
+        seq_mat,wtrow = numerics.dataset2mutarray(dataset_df.copy(),modeltype)
+        out_df['val'] = numerics.eval_modelmatrix_on_mutarray(
+            np.array(model_df[headers]),seq_mat,wtrow)
     else:
         raise SortSeqError('Unrecognized model type %s'%modeltype)
  
     # Compute values
-    out_df['val'] = mymodel.evaluate(out_df)
+    
     # Validate dataframe and return
-    print out_df['val']
     return qc.validate_dataset(out_df,fix=True)
 
 

@@ -82,11 +82,11 @@ def main(model_df, contig_list, numsites=10, verbose=False):
             sitelist_df.drop(sitelist_df.index[numsites:], inplace=True)
 
         if verbose:
-            print '.',
+            print('.'),
             sys.stdout.flush()
 
     if verbose:
-        print ''
+        print('')
         sys.stdout.flush()
 
     # If no sites were found, raise error

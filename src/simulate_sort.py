@@ -51,7 +51,6 @@ def main(
     i = 0
     output_df = pd.DataFrame()
     for chunk in df:
-        print i
         chunk.reset_index(inplace=True,drop=True)
         chunk = evaluate_model.main(chunk,mp,left=start,right=None)
         
@@ -68,7 +67,6 @@ def main(
                 noisyexp[np.linspace(0,len(noisyexp),nbins,endpoint=False,dtype=int)])
             val_cutoffs.append(np.inf)
             val_cutoffs[0] = -np.inf
-        print val_cutoffs
         #Determine Expression Cutoffs for bins
         seqs_arr = np.zeros([len(listnoisyexp),nbins],dtype=int)
         #split sequence into bins based on calculated cutoffs
@@ -81,8 +79,6 @@ def main(
         col_labels = utils.get_column_headers(temp_output_df)
         #temp_output_df['ct'] = temp_output_df[col_labels].sum(axis=1)      
         temp_output_df.drop('val',axis=1,inplace=True)
-        print temp_output_df.shape
-        print output_df.shape
         output_df = pd.concat([output_df,temp_output_df],axis=0).copy()
         i = i + 1
     output_df['ct'] = output_df[col_labels].sum(axis=1)   

@@ -18,8 +18,6 @@ from setuptools import find_packages
         'numpy',\
 '''
 
-if (sys.version_info[0], sys.version_info[1]) != (2, 7):
-    raise RuntimeError('sortseq is currently only compatible with Python 2.7.\nYou are using Python %d.%d' % (sys.version_info[0], sys.version_info[1]))
 input_data_list_commands = glob.glob('mpathic_tests/commands/*.txt')
 input_data_list_inputs = glob.glob('mpathic_tests/input/*')
 

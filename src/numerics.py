@@ -41,6 +41,8 @@ def dataset2mutarray(dataset_df, modeltype, chunksize=1000, rowsforwtcalc=100):
         seqs2array = mpathic.fast.seqs2array_for_matmodel
     elif modeltype=='NBR':
         seqs2array = mpathic.fast.seqs2array_for_nbrmodel
+    elif modeltype=='PAIR':
+        seqs2array = mpathic.fast.seqs2array_for_pairmodel
     else:
         raise SortSeqError('Unknown model type: %s'%modeltype)
 
@@ -54,7 +56,6 @@ def dataset2mutarray(dataset_df, modeltype, chunksize=1000, rowsforwtcalc=100):
     dataset_head_df = dataset_df.head(rowsforwtcalc)
     mut_df = profile_mut(dataset_head_df)
     wtseq = ''.join(list(mut_df[wtcol]))
-    print wtseq
     wtrow = seqs2array([wtseq], seq_type=seqtype).ravel().astype(bool)
     numfeatures = len(wtrow)
 
@@ -103,6 +104,8 @@ def dataset2mutarray_withwtseq(dataset_df, modeltype, wtseq, chunksize=1000):
         seqs2array = mpathic.fast.seqs2array_for_matmodel
     elif modeltype=='NBR':
         seqs2array = mpathic.fast.seqs2array_for_nbrmodel
+    elif modeltype=='pair':
+        seqs2array = mpathic.fast.seqs2array_for_pairmodel
     else:
         raise SortSeqError('Unknown model type: %s'%modeltype)
 
@@ -152,9 +155,36 @@ def dataset2mutarray_withwtseq(dataset_df, modeltype, wtseq, chunksize=1000):
     # Return vararray as well as binary representation of wt seq
     return mutarray_csr, wtrow
 
+def eval_modelmatrix_on_mutarray_pair(modelmatrix,mutarray,wtrow):
+    '''This function will evaluate a model on a pairwise mutarray. Both
+       model and wtrow are 1 dimensional'''
+    #first check for possible errors.
+    if not isinstance(modelmatrix,np.ndarray):
+        raise SortSeqError('modelmatrix is not a np.ndarray')
+    if not isinstance(wtrow,np.ndarray):
+        raise SortSeqError('wtrow is not an np.ndarray')
+    if not isinstance(mutarray,csr.csr_matrix):
+        raise SortSeqErorr('mutarray is not a sparse csr_matrix')
+        raise SortSeqError('Unrecognized model type %s'%modeltype)
+    if len(wtrow.shape)!=1:
+        raise SortSeqError('wtrow is not 1-dimensional')
+    if len(modelmatrix.shape)!=1:
+        raise SortSeqError('modelmatrix is not 1-dimensional')
+    if wtrow.size!=modelmatrix.size:
+        raise SortSeqError('wtrow does not match modelmatrix')
+    #now get constant wt value to add in
+    const_val = np.dot(wtrow,modelmatrix)
+    
+    #now prep for array scanning by model matrix.
+    tmp_matrix = modelmatrix.copy()
+    #we will need a sparse matrix transposed format of the model matrix.
+    modelmatrix_for_mutarray = csr_matrix(np.matrix(tmp_matrix).T)
+    mutarray_vals = mutarray*modelmatrix_for_mutarray
+    
+    vals = const_val + mutarray_vals.toarray().ravel()
+    return vals
 
 def eval_modelmatrix_on_mutarray(modelmatrix, mutarray, wtrow):
-
     # Do error checking
     if not isinstance(modelmatrix,np.ndarray):
         raise SortSeqError('modelmatrix is not a np.ndarray')
@@ -173,12 +203,15 @@ def eval_modelmatrix_on_mutarray(modelmatrix, mutarray, wtrow):
     # Compute constant contribution to model prediciton
     modelmatrix_vec = modelmatrix.ravel()
     const_val = np.dot(wtrow,modelmatrix_vec)
-
+    
     # Prepare matrix for scanning mutarray
     tmp_matrix = modelmatrix.copy()
     indices = wtrow.reshape(modelmatrix.shape).astype(bool)
+    
     wt_matrix_vals = tmp_matrix[indices]
+
     tmp_matrix -= wt_matrix_vals[:,np.newaxis]
+
     modelmatrix_for_mutarray = csr_matrix(np.matrix(tmp_matrix.ravel()).T)
 
     # Compute values

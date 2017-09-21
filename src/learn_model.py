@@ -11,7 +11,6 @@ import scipy.sparse
 #Our miscellaneous functions
 import pandas as pd
 import mpathic.utils as utils
-from sklearn import linear_model
 import mpathic.EstimateMutualInfoforMImax as EstimateMutualInfoforMImax
 import pymc
 import mpathic.stepper as stepper
@@ -23,9 +22,7 @@ import mpathic.qc as qc
 import pdb
 from mpathic import shutthefuckup
 import mpathic.numerics as numerics
-from sklearn.preprocessing import StandardScaler
-import cvxopt
-from cvxopt import solvers, matrix, spdiag, sqrt, div, exp
+import mpathic.convex as convex
 import warnings
 import mpathic.profile_mut as profile_mut
 import mpathic.fast
@@ -43,27 +40,26 @@ def add_label(s):
 def MaximizeMI_memsaver(
         seq_mat,df,emat_0,wtrow,db=None,burnin=1000,iteration=30000,thin=10,
         runnum=0,verbose=False):
-    '''Performs MCMC MI maximzation in the case where lm = memsaver'''    
-    '''
-    @pymc.stochastic(observed=True,dtype=sp.sparse.csr_matrix)
-    def sequences(value=seq_mat):
-        return 0
-    '''
+    '''Performs MCMC MI maximzation using pymc.'''    
     n_seqs = seq_mat.shape[0]
     @pymc.stochastic(observed=True,dtype=pd.DataFrame)
     def pymcdf(value=df):
         return 0
     @pymc.stochastic(dtype=float)
-    def emat(p=pymcdf,value=emat_0):         
-        p['val'] = numerics.eval_modelmatrix_on_mutarray(np.transpose(value),seq_mat,wtrow)                     
-        MI = EstimateMutualInfoforMImax.alt4(p.copy())  # New and improved
+    def emat(p=pymcdf,value=emat_0):  
+        #need special function to evaluate pairwise models bc they are 1-D.        
+        p['val'] = numerics.eval_modelmatrix_on_mutarray(
+            np.transpose(value),seq_mat,wtrow)            
+        MI = EstimateMutualInfoforMImax.alt4(p.copy())
+        print(MI)
         return n_seqs*MI
+    #set location to save full MCMC chain
     if db:
         dbname = db + '_' + str(runnum) + '.sql'
         M = pymc.MCMC([pymcdf,emat],db='sqlite',dbname=dbname)
     else:
         M = pymc.MCMC([pymcdf,emat])
-    M.use_step_method(stepper.GaugePreservingStepper,emat)
+    M.use_step_method(pymc.Metropolis,emat)
 
     if not verbose:
         M.sample = shutthefuckup(M.sample)
@@ -72,143 +68,43 @@ def MaximizeMI_memsaver(
     emat_mean = np.mean(M.trace('emat')[burnin:],axis=0)
     return emat_mean
 
-def robls(A, b, rho):
-    m, n = A.size
-    def F(x=None, z=None):
-        if x is None: return 0, matrix(0.0, (n,1))
-        y = A*x-b
-        w = sqrt(rho + y**2)
-        f = sum(w)
-        Df = div(y, w).T * A
-        if z is None: return f, Df
-        H = A.T * spdiag(z[0]*rho*(w**-3)) * A
-        return f, Df, H
-    return solvers.cp(F)['x']
+def MaximizeMI_pair(
+        seq_mat,df,emat_0,wtrow,db=None,burnin=1000,iteration=30000,thin=10,
+        runnum=0,verbose=False):
+    '''Performs MCMC MI maximzation using pymc. This is for models of all
+       pairwise interactions. models produced will be flattened models with
+       L choose 2 parameters where L is sequence length.'''    
+    n_seqs = seq_mat.shape[0]
+    @pymc.stochastic(observed=True,dtype=pd.DataFrame)
+    def pymcdf(value=df):
+        return 0
+    @pymc.stochastic(dtype=float)
+    def emat(p=pymcdf,value=emat_0):  
+        #need special function to evaluate pairwise models bc they are 1-D.        
+        p['val'] = numerics.eval_modelmatrix_on_mutarray_pair(
+            np.transpose(value),seq_mat,wtrow)            
+        MI = EstimateMutualInfoforMImax.alt4(p.copy())
+        return n_seqs*MI
+    #set location to save full MCMC chain
+    if db:
+        dbname = db + '_' + str(runnum) + '.sql'
+        M = pymc.MCMC([pymcdf,emat],db='sqlite',dbname=dbname)
+    else:
+        M = pymc.MCMC([pymcdf,emat])
+    #use basic stepper for flattened models
+    M.use_step_method(pymc.Metropolis,emat)
 
-def test_iter(A, B):
-    m,n1 = A.shape
-    n2 = B.shape[1]
-    Cshape = (m, n1*n2)
-    with warnings.catch_warnings():
-        #ignore depreciation warnings
-        warnings.simplefilter("ignore")
-    
-        #initialize our output sparse matrix data objects
-        data = np.empty((m,),dtype=object)
-        col =  np.empty((m,),dtype=object)
-        row =  np.empty((m,),dtype=object)
-        #do multiplication for each row
-        for i,(a,b) in enumerate(zip(A, B)):
-            #column indexes
-            col1 = a.indices * n2
-            col[i] = (col1[:,None]+b.indices).flatten()
-            row[i] = np.full((a.nnz*b.nnz,), i)
-            #all data will be 1's, as it is only true or false data
-            data[i] = np.ones(len(col[i]))
-    data = np.concatenate(data)
-    col = np.concatenate(col)
-    row = np.concatenate(row)
-    return scipy.sparse.coo_matrix((data,(row,col)),shape=Cshape)
-
-def convex_opt_agorithm(s,N0, Nsm,tm,alpha=1):
-    bins = tm.shape[1]
-    N0_matrix = np.matrix(N0)
-    tm_matrix = np.matrix(tm)
-    Nsm_matrix = np.matrix(Nsm)
-    tm_matrix_squared = np.matrix(np.multiply(tm,tm))
-    i,c = s.shape
-    #create s matrix, the elements of this matrix are delta_s@i * delta s2@j
-    #we will need this for hessian.
-    s_hessian_mat = sp.sparse.lil_matrix((i,c*c))
-    print 'hi'
-    s_hessian_mat = scipy.sparse.csr_matrix(test_iter(s,s))
-    print 'hi'
-    def F(x=None, z=None):
-        if x is None: return 0, matrix(0.0, (c+bins,1))
-        gm = np.transpose(np.array(x[c:]))
-        y = s*x[:c]
-        w = np.add(gm,y*tm_matrix)
-        term2 = np.array(N0)*np.array(np.exp(w))
-        term1 = np.multiply(np.array(Nsm),np.array(w))
-        print alpha/2*np.sum(cvxopt.mul(x,x))
-        f = cvxopt.matrix(-np.sum(term1-term2)+alpha/2*np.sum(cvxopt.mul(x,x)))
-        print f
-        Df = np.zeros((1,c+bins))
-        
-        Nm = np.sum(Nsm,axis=0)
-        
-        
-        Df_gm = Nm - sum(term2)
-        
-        Df_theta =  np.transpose((Nsm - term2)*np.transpose(tm))*s
-    
-        Df[0,:c] = Df_theta
-        
-        Df[0,c:] = Df_gm
-        print Df[0,90:94]
-        Df = Df - np.transpose(alpha*x)
-        Df_cvx = cvxopt.matrix(-Df)
-        if z is None: return f, Df_cvx
-        H = np.zeros((c+bins,c+bins))
-        
-        #first do the theta_theta terms
-                
-        #first do N_0*tm**2, this will produce a ixm matrix where each term is Ni0 * tm**2.
-        Inner_term = N0*tm_matrix_squared
-        #now multiply by a column vector form of w, this will do the multiplication by y, and also sum over m.
-        #you now have an ix1 matrix
-        Inner_term2 = np.sum(np.array(Inner_term)*np.array(np.exp(w)),axis=1)
-        
-        #multiply by hessian matrix and sum over sequences...
-     
-        H_thetas_temp = Inner_term2*s_hessian_mat
-        
-        #now we need to reshape such to fill in these values
-        H[:c,:c] = H_thetas_temp.reshape((c,c),order='F')
-        
-        
-        
-        
-        #now do mixed terms with partials of gms and thetas
-        #first multiply the N0 counts by the exponential term. This will give you a matrix of ixm
-        Inner_term = np.array(N0)*np.array(np.matrix(np.exp(w)))
-        #now use element wise multiplication to multiply by the tms, this will broadcasts their value down the rows
-        Inner_term2 = np.array(tm)*Inner_term
-        #now convert back to matrix form and multiply by s. This sums over sequence while multiplying by si, and
-        #yeilds a matrix of dimension mxc
-        H_gm_theta_temp = np.transpose(np.matrix(Inner_term2))*s
-        H[c:c+bins,:c] = H_gm_theta_temp
-        
-        #now we are going to do the last bit, the partials with respect to the gms
-        
-        #we can use the same 'Inner term' as above N0*exp(gm+tm*sum(theta*s))
-        #sum over s
-        Temp_term = np.sum(Inner_term,axis=0)
-        ident = np.identity(bins)
-        #use array multiplication to broadcast multiply such that all off diagonal terms are 0 and
-        #the on diagonal terms are equal to sum(Ns0*exp(gm+sum(theta*s)))
-        H_gms = np.array(Temp_term)*ident
-        H[c:c+bins,c:c+bins] = H_gms
-        
-        
-        #now insure that H is symmetric across diagonal
-        for q in range(c+bins):
-            for k in range(q):
-                H[k,q] = H[q,k]
-        penalty_term = alpha*np.identity(c+bins)
-        H = cvxopt.matrix(z[0]*(H+penalty_term))
-                  
-        
-        return f, Df_cvx, H
-    return solvers.cp(F)['x']
+    if not verbose:
+        M.sample = shutthefuckup(M.sample)
+    M.sample(iteration,thin=thin)
+    emat_mean = np.mean(M.trace('emat')[burnin:],axis=0)
+    return emat_mean
 
 def reverse_parameterization(output,cols_for_keep,wtrow,seq_dict,bins=1,
         modeltype='MAT'):
     output = output[:-bins]
     df_out = np.zeros(len(wtrow))
-    print df_out.shape
     df_out.flat[cols_for_keep] = output
-    print len(seq_dict)
     df_out2 = df_out.reshape( \
         (len(seq_dict),len(df_out)/len(seq_dict)),order='F') 
     
@@ -217,12 +113,14 @@ def reverse_parameterization(output,cols_for_keep,wtrow,seq_dict,bins=1,
 def find_second_NBR_matrix_entry(s):
     '''this is a function for use with numpy apply along axis. 
         It will take in a sequence matrix and return the second nonzero entry''' 
-    print np.nonzero(s)[0]
     return np.nonzero(s)[0][1]
 
-def convex_opt(df,seq_dict,inv_dict,columns,tm=None,modeltype='MAT',dicttype='dna'):
+def convex_opt(
+        df,seq_dict,inv_dict,columns,tm=None,modeltype='MAT',
+        dicttype='dna',fittype='PR'):
     rowsforwtcalc=1000
-    seq_mat,wtrow = numerics.dataset2mutarray(df.copy(),modeltype,rowsforwtcalc=rowsforwtcalc)
+    seq_mat,wtrow = numerics.dataset2mutarray(
+        df.copy(),modeltype,rowsforwtcalc=rowsforwtcalc)
     #need to make sure there is at least one representative 
     #of each possible entry, otherwise don't fit it.
     no_reps = np.sum(np.matrix(df['ct_0'])*seq_mat,axis=0)
@@ -230,17 +128,19 @@ def convex_opt(df,seq_dict,inv_dict,columns,tm=None,modeltype='MAT',dicttype='dn
         seq_mat.shape[1]) if x in np.nonzero(no_reps)[1]]
     #if the model is a neighbor model we also need to 
     #make sure we only give each mutation one parameter.
-    if modeltype=='NBR':
+    if modeltype =='NBR':
         mut_df = profile_mut.main(df.loc[:rowsforwtcalc,:])
         wtseq = ''.join(list(mut_df['wt']))
         
-        single_seq_dict,single_inv_dict = utils.choose_dict(dicttype,modeltype='MAT')
+        single_seq_dict,single_inv_dict = utils.choose_dict(
+            dicttype,modeltype='MAT')
         seqs = []
         #now make each possible single mutation...
         for i,let in enumerate(wtseq[1:-1]):
             for m in range(1,4):
                 let_for_mutation = single_seq_dict[let]
-                let_for_mutation = single_inv_dict[np.mod(let_for_mutation + m,4)]
+                let_for_mutation = single_inv_dict[np.mod(
+                    let_for_mutation + m,4)]
                 mut_seq = list(wtseq)
                 mut_seq[i+1] = let_for_mutation
                 seqs.append(''.join(mut_seq))
@@ -266,12 +166,17 @@ def convex_opt(df,seq_dict,inv_dict,columns,tm=None,modeltype='MAT',dicttype='dn
         tm = np.array(tm)
     else:
         tm = np.matrix([x for x in range(1,len(columns)+1)])
-    print tm
-    output = convex_opt_agorithm(seq_mat2,N0,Nsm,tm)
-    output_parameterized = reverse_parameterization(output,cols_for_keep,wtrow,seq_dict,bins=tm.shape[1],modeltype=modeltype)
-    print output_parameterized
-    print output_parameterized.shape
+    if fittype == 'PR':
+        output = convex.convex_opt_agorithm(seq_mat2,N0,Nsm,tm)
+    elif fittype == 'LS':
+        output = convex.convex_opt_algorith_LS(seq_mat2,Nsm,tm)
+    else:
+        raise SortSeqError('incorrect fit type')
+    output_parameterized = reverse_parameterization(
+        output,cols_for_keep,wtrow,seq_dict,
+        bins=tm.shape[1],modeltype=modeltype)
     return output_parameterized
+
 
 def Berg_von_Hippel(df,dicttype,foreground=1,background=0,pseudocounts=1):
     '''Learn models using berg von hippel model. The foreground sequences are
@@ -399,7 +304,6 @@ def Markov(df,dicttype,foreground=1,background=0,pseudocounts=1):
     background_freqs_neighbor[binheaders_neighbor] = \
         background_freqs_neighbor[binheaders_neighbor].div( \
         background_freqs_neighbor[binheaders_neighbor].sum(axis=1),axis=0)
-    print foreground_freqs_neighbor
     #normalize to compute frequencies
     foreground_freqs = foreground_counts.copy()
     background_freqs = background_counts.copy()
@@ -423,15 +327,6 @@ def Markov(df,dicttype,foreground=1,background=0,pseudocounts=1):
     model_df['pos'] = foreground_counts_neighbor['pos']
     
     return model_df
-
-
-def Compute_Least_Squares(raveledmat,batch,sw,alpha=0):
-    '''Ridge regression is the only sklearn regressor that supports sample
-        weights, which will make this much faster'''
-    clf = linear_model.Ridge(alpha=alpha)
-    clf.fit(raveledmat,batch,sample_weight=sw)
-    emat = clf.coef_
-    return emat
     
 
 def main(df,lm='IM',modeltype='MAT',LS_means_std=None,\
@@ -442,23 +337,26 @@ def main(df,lm='IM',modeltype='MAT',LS_means_std=None,\
     
     # Determine dictionary
     seq_cols = qc.get_cols_from_df(df,'seqs')
-    if not len(seq_cols)==1:
+    if not len(seq_cols) == 1:
         raise SortSeqError('Dataframe has multiple seq cols: %s'%str(seq_cols))
     dicttype = qc.colname_to_seqtype_dict[seq_cols[0]]
 
     seq_dict,inv_dict = utils.choose_dict(dicttype,modeltype=modeltype)
     
     '''Check to make sure the chosen dictionary type correctly describes
-         the sequences. An issue with this test is that if you have DNA sequence
-         but choose a protein dictionary, you will still pass this test bc A,C,
+         the sequences. An issue with this test is 
+         that if you have DNA sequence but choose a protein dictionary,
+         you will still pass this test bc A,C,
          G,T are also valid amino acids'''
+
     #set name of sequences column based on type of sequence
     type_name_dict = {'dna':'seq','rna':'seq_rna','protein':'seq_pro'}
     seq_col_name = type_name_dict[dicttype]
     lin_seq_dict,lin_inv_dict = utils.choose_dict(dicttype,modeltype='MAT')
-    #wtseq = utils.profile_counts(df.copy(),dicttype,return_wtseq=True,start=start,end=end)
-    #wt_seq_dict_list = [{inv_dict[np.mod(i+1+seq_dict[w],len(seq_dict))]:i for i in range(len(seq_dict)-1)} for w in wtseq]
+    
+    #create a seq dictionary with out last item for different parameterization
     par_seq_dict = {v:k for v,k in seq_dict.items() if k != (len(seq_dict)-1)}
+
     #drop any rows with ct = 0
     df = df[df.loc[:,'ct'] != 0]
     df.reset_index(drop=True,inplace=True)
@@ -466,15 +364,19 @@ def main(df,lm='IM',modeltype='MAT',LS_means_std=None,\
     #If there are sequences of different lengths, then print error but continue
     if len(set(df[seq_col_name].apply(len))) > 1:
          sys.stderr.write('Lengths of all sequences are not the same!')
+
     #select target sequence region
     df.loc[:,seq_col_name] = df.loc[:,seq_col_name].str.slice(start,end)
     df = utils.collapse_further(df)
     col_headers = utils.get_column_headers(df)
+
     #make sure all counts are ints
     df[col_headers] = df[col_headers].astype(int)
+
     #create vector of column names
     val_cols = ['val_' + inv_dict[i] for i in range(len(seq_dict))]
     df.reset_index(inplace=True,drop=True)
+
     #Drop any sequences with incorrect length
     if not end:
         '''is no value for end of sequence was supplied, assume first seq is
@@ -484,19 +386,22 @@ def main(df,lm='IM',modeltype='MAT',LS_means_std=None,\
         seqL = end-start
     df = df[df[seq_col_name].apply(len) == (seqL)]
     df.reset_index(inplace=True,drop=True)
+
     #Do something different for each type of learning method (lm)
     if lm == 'ER':
         if modeltype == 'NBR':
-            emat = Markov(df,dicttype,foreground=foreground,background=background,
-            pseudocounts=pseudocounts)
+            emat = Markov(
+                df,dicttype,foreground=foreground,background=background,
+                pseudocounts=pseudocounts)
         else:
             emat = Berg_von_Hippel(
-            df,dicttype,foreground=foreground,background=background,
-            pseudocounts=pseudocounts)       
+                df,dicttype,foreground=foreground,background=background,
+                pseudocounts=pseudocounts)       
         
     if lm == 'PR':
         emat = convex_opt(df,seq_dict,inv_dict,col_headers,tm=tm, \
-            dicttype=dicttype, modeltype=modeltype)
+            dicttype=dicttype, modeltype=modeltype,fittype='PR')
+
     if lm == 'LS':
         '''First check that is we don't have a penalty for ridge regression,
             that we at least have all possible base values so that the analysis
@@ -514,50 +419,53 @@ def main(df,lm='IM',modeltype='MAT',LS_means_std=None,\
             means.index = labels
         else:
             means = None
-        #drop all rows without counts
-        df['ct'] = df[col_headers].sum(axis=1)
-        df = df[df.ct != 0]        
-        df.reset_index(inplace=True,drop=True)
-        ''' For sort-seq experiments, bin_0 is library only and isn't the lowest
-            expression even though it is will be calculated as such if we proceed.
-            Therefore is drop_library is passed, drop this column from analysis.'''
-        if drop_library:
-            try:     
-                df.drop('ct_0',inplace=True)
-                col_headers = utils.get_column_headers(df)
-                if len(col_headers) < 2:
-                    raise SortSeqError(
-                        '''After dropping library there are no longer enough 
-                        columns to run the analysis''')
-            except:
-                raise SortSeqError('''drop_library option was passed, but no ct_0
-                    column exists''')
-        #parameterize sequences into 3xL vectors
-                               
-        raveledmat,batch,sw = utils.genweightandmat(
-                                  df,par_seq_dict,dicttype,means=means,modeltype=modeltype)
-        #Use ridge regression to find matrix.       
-        emat = Compute_Least_Squares(raveledmat,batch,sw,alpha=alpha)
+
+        #Use ridge via convex optimization to find matrix.       
+        emat = convex_opt(df,seq_dict,inv_dict,col_headers,tm=tm, \
+            dicttype=dicttype, modeltype=modeltype,fittype='LS')
 
     if lm == 'IM':
         seq_mat,wtrow = numerics.dataset2mutarray(df.copy(),modeltype)
-        #this is also an MCMC routine, do the same as above.
+
+        #for info max we need to first initialize an initial guess for
+        #the model matrix.
+        #guess randomly
         if initialize == 'rand':
             if modeltype == 'MAT':
                 emat_0 = utils.RandEmat(len(df[seq_col_name][0]),len(seq_dict))
             elif modeltype == 'NBR':
-                emat_0 = utils.RandEmat(len(df[seq_col_name][0])-1,len(seq_dict))
+                emat_0 = utils.RandEmat(
+                    len(df[seq_col_name][0])-1,len(seq_dict))
+            else:
+                emat_0 = np.random.rand(
+                    len(seq_dict),int(sp.misc.comb(seqL,2)))
+        #guess using least squares
         elif initialize == 'LS':
             emat_cols = ['val_' + inv_dict[i] for i in range(len(seq_dict))]
-            emat_0_df = main(df.copy(),lm='LS',modeltype=modeltype,alpha=alpha,start=0,end=None,verbose=verbose)
+            emat_0_df = main(
+                df.copy(),lm='LS',modeltype=modeltype,alpha=alpha,
+                start=0,end=None,verbose=verbose)
             emat_0 = np.transpose(np.array(emat_0_df[emat_cols]))   
             #pymc doesn't take sparse mat
+        #guess using poisson regression.
         elif initialize == 'PR':
             emat_cols = ['val_' + inv_dict[i] for i in range(len(seq_dict))]
-            emat_0_df = main(df.copy(),lm='PR',modeltype=modeltype,start=0,end=None)
+            emat_0_df = main(
+                df.copy(),lm='PR',modeltype=modeltype,
+                start=0,end=None)
             emat_0 = np.transpose(np.array(emat_0_df[emat_cols]))
+
+        #we can run the same function for mt=MAT or NBR but need special one
+        #for PAIR
+        '''if modeltype == 'PAIR':
+            emat = MaximizeMI_pair(
+                seq_mat,df.copy(),emat_0,wtrow,db=db,
+                iteration=iteration,burnin=burnin,
+                thin=thin,runnum=runnum,verbose=verbose)
+        '''
         emat = MaximizeMI_memsaver(
-                seq_mat,df.copy(),emat_0,wtrow,db=db,iteration=iteration,burnin=burnin,
+                seq_mat,df.copy(),emat_0,wtrow,db=db,
+                iteration=iteration,burnin=burnin,
                 thin=thin,runnum=runnum,verbose=verbose)
 
     #We have infered out matrix.
@@ -575,10 +483,15 @@ def main(df,lm='IM',modeltype='MAT',LS_means_std=None,\
              except:
                  sys.stderr.write('Gauge Fixing Failed')
                  emat_typical = np.transpose(emat)
-    
+        #if we had a pairwise interaction model our model cannot be formatted
+        #so just return it.
+        elif modeltype == 'PAIR':
+             sys.stderr.write('Gauge Fixing not available for pair models')
+             emat_typical = np.transpose(emat)
     elif lm == 'ER': 
-        '''the emat for this format is currently transposed compared to other formats
-        it is also already a data frame with columns [pos,val_...]'''
+        '''the emat for this format is 
+            currently transposed compared to other formats
+            it is also already a data frame with columns [pos,val_...]'''
         if modeltype == 'NBR':
             emat_cols = ['val_' + inv_dict[i] for i in range(len(seq_dict))]
             emat_typical = emat[emat_cols]
@@ -590,11 +503,9 @@ def main(df,lm='IM',modeltype='MAT',LS_means_std=None,\
             except:
                 sys.stderr.write('Gauge Fixing Failed')
                 emat_typical = emat_typical
-
     elif (lm == 'MK'):
         '''The model is a first order markov model and its gauge does not need
             to be changed.'''
-        
     elif lm == 'PR':
         emat_typical = np.transpose(emat)
     else: #must be Least squares
@@ -611,13 +522,23 @@ def main(df,lm='IM',modeltype='MAT',LS_means_std=None,\
              except:
                 sys.stderr.write('Gauge Fixing Failed')
                 emat_typical = np.transpose(emat_typical)
+
     em = pd.DataFrame(emat_typical)
     em.columns = val_cols
     #add position column
     if modeltype == 'NBR':
-        pos = pd.Series(range(start,start - 1 + len(df[seq_col_name][0])),name='pos') 
+        pos = pd.Series(
+                        range(start,start - 1 +
+                        len(df[seq_col_name][0])),name='pos') 
+    elif modeltype == 'PAIR':
+        pos = pd.Series(
+                        [str(i) + '.' + str(n)
+                        for i in range(start,start+len(df[seq_col_name][0])-1)
+                        for n in range(i+1,start+len(df[seq_col_name][0]))],name='pos')
+    #this applies to mt = MAT
     else:
-        pos = pd.Series(range(start,start + len(df[seq_col_name][0])),name='pos')    
+        pos = pd.Series(
+            range(start,start + len(df[seq_col_name][0])),name='pos')    
     output_df = pd.concat([pos,em],axis=1)
     # Validate model and return
     output_df = qc.validate_model(output_df,fix=True)
@@ -628,8 +549,9 @@ def wrapper(args):
 
     #validate some of the input arguments
     qc.validate_input_arguments_for_learn_model(
-        foreground=args.foreground,background=args.background,alpha=args.penalty,
-        modeltype=args.modeltype,learningmethod=args.learningmethod,
+        foreground=args.foreground,background=args.background,
+        alpha=args.penalty,modeltype=args.modeltype,
+        learningmethod=args.learningmethod,
         start=args.start,end=args.end,iteration=args.iteration,
         burnin=args.burnin,thin=args.thin,pseudocounts=args.pseudocounts,)
 
@@ -649,6 +571,7 @@ def wrapper(args):
         alpha=args.penalty,pseudocounts=args.pseudocounts,
         verbose=args.verbose,tm=args.tm)
 
+    #if mt = pair then output_df is a numpy array, we need to save differently.
     io.write(output_df,outloc)
 
 
@@ -661,12 +584,13 @@ def add_subparser(subparsers):
     p.add_argument(
         '-e','--end',type=int,default = None,
         help='Position to end your analyzed region')
-    p.add_argument('--penalty',type=float,default=0.5,help='Ridge Regression Penalty')
+    p.add_argument(
+        '--penalty',type=float,default=0.5,help='Ridge Regression Penalty')
     p.add_argument(
         '-lm','--learningmethod',choices=['ER','LS','IM','PR'],default='LS',
         help = '''Algorithm for determining matrix parameters.''')
     p.add_argument(
-        '-mt','--modeltype', choices=['MAT','NBR'], default='MAT')
+        '-mt','--modeltype', choices=['MAT','NBR','PAIR'], default='MAT')
     p.add_argument(
         '--pseudocounts',default=1,type=int,help='''pseudocounts to add''')
     p.add_argument(

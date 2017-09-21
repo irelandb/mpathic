@@ -24,9 +24,9 @@ def wrapper(args):
     # Commands must be execulted in cwd to work
     command_file_path = os.path.abspath(resource_filename('mpathic_tests', 'test_fast.py'))
     command_path = os.path.dirname(command_file_path)
-    print command_path
+    print(command_path)
     cwd = os.path.join(command_path,'input')
-    print cwd
+    print(cwd)
     # If files passed via commandline, use those.
     #if len(sys.argv)>1:
     #     filenames = sys.argv[1:]
@@ -35,10 +35,10 @@ def wrapper(args):
     
     filenames = glob.glob(filenames_path)
 
-    print 'Testing SortSeqTools on commands in the following files:'
-    print '-----'
-    print '\n'.join(filenames)
-    print '-----'
+    print('Testing SortSeqTools on commands in the following files:')
+    print('-----')
+    print('\n'.join(filenames))
+    print('-----')
 
     total_tests = 0
     failed_tests = []
@@ -46,8 +46,8 @@ def wrapper(args):
     # Process each file
     for filename in filenames:
 
-        print 'Processing commands in %s...'%filename
-        print 'Input files are drawn from %s' %cwd
+        print('Processing commands in %s...'%filename)
+        print('Input files are drawn from %s' %cwd)
         # Read lines. Strip whitespace
         with open(filename) as f:
             lines = [l.strip() for l in f.readlines()]
@@ -58,7 +58,7 @@ def wrapper(args):
 
             # If emtpy or comment line, just print
             if not line or '#'==line[0]:
-                print '  '+line
+                print('  '+line)
                 continue
 
             # Extract command
@@ -71,7 +71,7 @@ def wrapper(args):
 
             # If specifies validation, record and move to next line
             if test_type=='validation':
-                print '> '+line
+                print('> '+line)
                 validation = command
                 continue
 
@@ -96,7 +96,7 @@ def wrapper(args):
             prepend = '. '
             if test_type=='good' and stderr_str:
                 prepend = 'E '
-                print stderr_str
+                print(stderr_str)
                 failed_tests.append(line)
 
             elif test_type=='bad' and not ('SortSeqError' in stderr_str):
@@ -106,19 +106,19 @@ def wrapper(args):
             if not test_type in ('good','bad'):
                 raise SortSeqError('Unrecognized test type %s'%repr(test_type))
 
-            print prepend + line
+            print(prepend + line)
             total_tests += 1
 
-        print '  Done with %s.\n'%filename
+        print('  Done with %s.\n'%filename)
 
     # Stop clock
     testing_time = time.time() - start_time
-    print '------------FAILED TESTS-------------'
-    print '\n'.join(failed_tests)
-    print '-------------------------------------'
-    print 'Time to run tests: %.2f min.'%(testing_time/60.0)
-    print 'Results: %d tests, %d failures.'%(total_tests,len(failed_tests))
-    print '-------------------------------------'
+    print('------------FAILED TESTS-------------')
+    print('\n'.join(failed_tests))
+    print('-------------------------------------')
+    print('Time to run tests: %.2f min.'%(testing_time/60.0))
+    print('Results: %d tests, %d failures.'%(total_tests,len(failed_tests)))
+    print('-------------------------------------')
 
 # Connects argparse to wrapper
 def add_subparser(subparsers):

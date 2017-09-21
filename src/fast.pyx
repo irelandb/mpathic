@@ -1,5 +1,6 @@
 import numpy as np
 cimport numpy as np
+import scipy.misc as spmisc
 from cpython cimport bool
 
 import mpathic.qc as qc
@@ -158,7 +159,7 @@ def seqs2array_for_pairmodel(list seq_list, bytes seq_type, safe=True):
     num_seqs = len(seq_list)
     seq_length = len(seq_list[0])
     mat = np.zeros(\
-        [num_seqs,round(sp.misc.comb(seq_length,2))*num_dichars], dtype=DTYPE)
+        [num_seqs,int(spmisc.comb(seq_length,2))*num_dichars], dtype=DTYPE)
 
     # Fill matrix row by row
     for n, seq in enumerate(seq_list):

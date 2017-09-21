@@ -1,0 +1,9 @@
+Training/Test  DMS_Train   DMS_Test
+Neighbor_LS_on_dms1   0.139901   0.020760
+MCMC_Linear_on_dms1   0.154697   0.026106
+  Linear_LS_on_dms1   0.152940   0.025826
+        BVH_on_dms1   0.154186   0.026032
+Neighbor_LS_on_dms2   0.121550   0.021762
+MCMC_Linear_on_dms2   0.141520   0.028670
+  Linear_LS_on_dms2   0.135615   0.028315
+        BVH_on_dms2   0.145694   0.028416

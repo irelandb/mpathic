@@ -4,18 +4,15 @@ from __future__ import division
 import numpy as np
 import argparse
 import sys
-from subprocess import Popen, PIPE
-from sklearn.grid_search import GridSearchCV
 if __name__== '__main__':
     import sortseq.utils
-from collections import Counter
-from cStringIO import StringIO
 import pandas as pd
 import scipy as sp
 import scipy.ndimage
 import mpathic.utils as utils
 import pdb
 import mpathic.info as info
+import scipy.signal
 
 
 ''' This script estimates MI by implementing a Density Estimation through 
@@ -169,14 +166,21 @@ def alt4(df, coarse_graining_level = 0.01,return_freg=False):
         raise TypeError(\
             'group_num=%d does not match n_groups=%s'%(group_num,n_groups))
     # Smooth empirical distribution with gaussian KDE
-    f_reg = scipy.ndimage.gaussian_filter1d(cts_grouped,0.08*n_groups,axis=0)
-
+    f_reg = scipy.ndimage.gaussian_filter1d(cts_grouped,0.04*n_groups,axis=0)
+    maxes = np.argmax(f_reg,axis=0)
     # Return mutual information
     if return_freg:
+       peaks = scipy.signal.find_peaks_cwt(f_reg[:,1],np.array([50]))
+       print 'hi'
+       print peaks
+       print 'hi'
        return info.mutualinfo(f_reg),f_reg
+    #elif all(maxes[m]<maxes[m+1] for m in range(len(maxes)-1)) or all(maxes[m]>maxes[m+1] for m in range(len(maxes)-1)): 
+    #   return info.mutualinfo(f_reg)
+    #else:
+    #   return -10
     else:
-       return info.mutualinfo(f_reg)
-
+        return info.mutualinfo(f_reg)
 
 def main():
     parser = argparse.ArgumentParser(

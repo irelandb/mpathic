@@ -5,8 +5,8 @@ import re
 import pdb
 import numpy as np
 import os
-import qc
-import utils
+import mpathic.qc as qc
+import mpathic.utils as utils
 from mpathic import SortSeqError
 import time
 

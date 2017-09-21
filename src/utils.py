@@ -127,7 +127,18 @@ def sample(weights,T_counts):
     emean = T_counts*weights/np.sum(weights)
     resampled_lib = np.random.poisson(lam=emean)
     return resampled_lib
-    
+
+def gen_starting_emat(seq_length,dict_length)
+    '''generates starting random energy matrix for IM method'''
+    if modeltype == 'MAT':
+        emat_0 = RandEmat(seq_length),dict_length)
+    elif modeltype == 'NBR':
+        emat_0 = RandEmat(
+           seq_length-1,dict_length)
+    else:
+        emat_0 = np.random.rand(
+           dict_length,int(sp.misc.comb(seq_length,2)))
+    return emat_0
 def choose_dict(dicttype,modeltype='MAT'):
     '''Get numbering dictionary for either dna,rna, or proteins'''
     if dicttype == 'dna':
@@ -144,7 +155,7 @@ def choose_dict(dicttype,modeltype='MAT'):
     else:
         raise SortSeqError('Unkonwn dicttype: %s'%dicttype)
 
-    if modeltype == 'NBR':
+    if modeltype == 'NBR' or modeltype == 'PAIR':
         seq_dict = {
             ''.join([inv_dict[i],inv_dict[z]]):i*len(seq_dict)+z 
             for i in range(len(seq_dict)) for z in range(len(seq_dict))}

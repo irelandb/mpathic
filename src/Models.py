@@ -256,9 +256,8 @@ class NormalNoise(NoiseModel):
 class PoissonNoise(NoiseModel):
     '''Add Noise for mpra experiment Expression Measurements'''
 
-    def gennoisyexp(self,df,T_LibCounts,T_mRNACounts,mult=1):
+    def gennoisyexp(self,df,T_LibCounts,T_mRNACounts,mult=1,scale=.2):
         exp = np.exp(-df['val']*mult)
-        
         libcounts = df['ct']
         
         weights = exp*libcounts

@@ -30,6 +30,12 @@ subparsers = parser.add_subparsers()
 
 import mpathic.sortseq_for_doc as sortseq_for_doc
 
+import mpathic.predictiveinfo_pair as predictiveinfo_pair
+predictiveinfo_pair.add_subparser(subparsers)
+
+import mpathic.profile_activity as profile_activity
+profile_activity.add_subparser(subparsers)
+
 import mpathic.run_tests as run_tests
 run_tests.add_subparser(subparsers)
 
@@ -44,6 +50,9 @@ preprocess.add_subparser(subparsers)
 
 import mpathic.learn_model as learn_model
 learn_model.add_subparser(subparsers)
+
+import mpathic.learn_model_split as learn_model_split
+learn_model_split.add_subparser(subparsers)
 
 import mpathic.profile_ct as profile_ct
 profile_ct.add_subparser(subparsers)

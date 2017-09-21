@@ -290,9 +290,9 @@ def fix_matrix(matrix_model, wtseq='', mutrate=1, seqtype='DNA', \
     
     # Print number of gauge freedoms if requested
     if verbose:
-        print 'C = %d, P = %d'%(C,P)
-        print 'Theoretical: dim(G) = P = %d'%P
-        print 'Computational: dim(G) = %d'%(D - rank)
+        print('C = %d, P = %d'%(C,P))
+        print('Theoretical: dim(G) = P = %d'%P)
+        print('Computational: dim(G) = %d'%(D - rank))
 
     # Verify number of gauge freedoms
     assert (D - rank) == P # This is throwing errors! Maybe remove. 
@@ -363,9 +363,9 @@ def fix_neighbor(neighbor_model, wtseq='', mutrate=1, seqtype='DNA', \
 
     # Print number of gauge freedoms if requested
     if verbose:
-        print 'C = %d, P = %d'%(C,P)
-        print 'Theoretical: dim(G) = (P-1) + (C-1)*(P-2) = %d'%((P-1) + (C-1)*(P-2))
-        print 'Computational: Rank = %d => dim(G) = %d'%(rank, D - rank)
+        print('C = %d, P = %d'%(C,P))
+        print('Theoretical: dim(G) = (P-1) + (C-1)*(P-2) = %d'%((P-1) + (C-1)*(P-2)))
+        print('Computational: Rank = %d => dim(G) = %d'%(rank, D - rank))
 
     # Verify number of gauge freedoms
     assert (D - rank) == ((P-1) + (C-1)*(P-2))
@@ -428,9 +428,9 @@ def neighbor2matrix(neighbor_model, wtseq, mutrate, seqtype='DNA', \
     
     # Print number of gauge freedoms if requested
     if verbose:
-        print 'C = %d, P = %d'%(C,P)
-        print 'Theoretical: dim(G_mm) = P = %d'%P
-        print 'Computational: dim(G_mm) = %d'%(D - rank)
+        print('C = %d, P = %d'%(C,P))
+        print('Theoretical: dim(G_mm) = P = %d'%P)
+        print('Computational: dim(G_mm) = %d'%(D - rank))
 
     # Verify number of gauge freedoms
     assert (D - rank) == P
@@ -488,9 +488,9 @@ def matrix2neighbor(matrix_model, wtseq, mutrate, seqtype='DNA', \
     
     # Print number of gauge freedoms if requested
     if verbose:
-        print 'C = %d, P = %d'%(C,P)
-        print 'Theoretical: dim(G_nn) = (P-1) + (C-1)*(P-2) = %d'%((P-1) + (C-1)*(P-2))
-        print 'Computational: Rank = %d => dim(G_nn) = %d'%(rank, D - rank)
+        print('C = %d, P = %d'%(C,P))
+        print('Theoretical: dim(G_nn) = (P-1) + (C-1)*(P-2) = %d'%((P-1) + (C-1)*(P-2)))
+        print('Computational: Rank = %d => dim(G_nn) = %d'%(rank, D - rank))
     
     # Verify number of gauge freedoms
     assert (D - rank) == ((P-1) + (C-1)*(P-2))

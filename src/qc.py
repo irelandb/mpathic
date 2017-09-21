@@ -5,6 +5,7 @@ import re
 import pdb
 import numpy as np
 from mpathic import SortSeqError
+import sys
 
 rc_dict = {'A':'T','C':'G','G':'C','T':'A'} 
 
@@ -117,9 +118,20 @@ def get_model_type(model_df):
     modeltype = None
     for key in model_parameters_dict.keys():
         val_cols = model_parameters_dict[key]
+
+        #look at headings to see if they are single nt or pairs of nts
         if set(val_cols) == set(headers):
             seqtype = key[1]
             modeltype = key[0]
+
+        #if position column has a '.' in it, then it must be 
+        # a pair model instead of NBR
+        if modeltype == 'NBR':
+            if model_df.loc[:,'pos'].apply(lambda x: '.' in str(x)).all():
+                modeltype = 'PAIR'
+            elif model_df.loc[:,'pos'].apply(lambda x: '.' in str(x)).any():
+                raise SortSeqError('Model Type is ambigious (NBR or PAIR)')
+
     if (seqtype is None) or (modeltype is None):
         raise SortSeqError('Could not identify seqtype or modeltype')
     return (seqtype,modeltype)
@@ -213,7 +225,7 @@ def _validate_seqs_cols(df, fix=False):
         # Check that all characters are from the correct alphabet
         search_string = r"[^%s]"%alphabet
         if not all([re.search(search_string,seq)==None for seq in df[col]]):
-            print sum([re.search(search_string,seq)==None for seq in df[col]])
+            sys.err.write(sum([re.search(search_string,seq)==None for seq in df[col]]))
             raise SortSeqError('Invalid character found in sequences.')
 
     return df
@@ -333,28 +345,14 @@ def _validate_pos_cols(df, fix=False):
     """
     col = 'pos'
     if col in df.columns:
+        
         try:
-            int_vals = df[col].values.astype(int)
             float_vals = df[col].values.astype(float)
         except:
             raise SortSeqError(\
                 'Cannot convert values in column %s to numbers.'%col)
 
-        if not df[col].values.dtype == int:
-            if all(int_vals==float_vals):
-                if fix:
-                    df[col] = df[col].astype(int)
-                else:
-                    raise SortSeqError(\
-                        'Positions are not integers; set fix=True to fix.')
-            else:
-                raise SortSeqError(\
-                        'Positions cannot be interpreted as integers.')
-
         first = df[col].iloc[0]
-        last = df[col].iloc[-1]
-        if not np.array_equal(df[col].values,np.arange(first,last+1)):
-            raise SortSeqError('Positions are not consecutive integers.')
 
         if first < 0:
             raise SortSeqError('Positions are not all nonnegative.')
