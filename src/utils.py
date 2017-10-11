@@ -128,10 +128,10 @@ def sample(weights,T_counts):
     resampled_lib = np.random.poisson(lam=emean)
     return resampled_lib
 
-def gen_starting_emat(seq_length,dict_length)
+def gen_starting_emat(seq_length,dict_length):
     '''generates starting random energy matrix for IM method'''
     if modeltype == 'MAT':
-        emat_0 = RandEmat(seq_length),dict_length)
+        emat_0 = RandEmat(seq_length,dict_length)
     elif modeltype == 'NBR':
         emat_0 = RandEmat(
            seq_length-1,dict_length)

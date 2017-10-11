@@ -33,6 +33,8 @@ def main(df,model_df,T_LibCounts,T_mRNACounts,start=0,end=None,mult=1):
        chunk = chunk[chunk['ct']!=0]
        del chunk['val']
        output_df = pd.concat([output_df,chunk],axis=0).copy()
+   seq_col = [x for x in output_df.columns if 'seq' in x][0]
+   output_df = output_df[['ct','ct_0','ct_1',seq_col]]
    return output_df
     
 # Define commandline wrapper

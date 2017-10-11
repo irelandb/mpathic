@@ -65,7 +65,7 @@ def main(dataset_df,model_df,left=None,right=None):
             pos_col.loc[:,'end'] = model_df['pos'].apply(split_pos)[1]
             start = end - pos_col.loc[:,'end'].max() + pos_col.loc[:,'start'].min()
         else:    
-            start = end - model_df.shape[0] - (1 if modeltype=='NBR' else 0) - 1  
+            start = end - model_df.shape[0] - (1 if modeltype=='NBR' else 0)  
 
     else:
         start = model_df['pos'].values[0]

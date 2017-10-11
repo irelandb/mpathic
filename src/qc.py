@@ -225,7 +225,6 @@ def _validate_seqs_cols(df, fix=False):
         # Check that all characters are from the correct alphabet
         search_string = r"[^%s]"%alphabet
         if not all([re.search(search_string,seq)==None for seq in df[col]]):
-            sys.err.write(sum([re.search(search_string,seq)==None for seq in df[col]]))
             raise SortSeqError('Invalid character found in sequences.')
 
     return df
@@ -341,18 +340,41 @@ def _validate_cts_cols(df, fix=False):
 
 def _validate_pos_cols(df, fix=False):
     """
-    Validates the pos column in a given dataframe (if it exists)
+    Validates the pos column in a given dataframe (if it exists). This is only
+    particularly useful for MAT and NBR models currently. Full functionality
+    to check PAIR models is still not included.
     """
     col = 'pos'
     if col in df.columns:
-        
+        try:
+            int_vals = df[col].values.astype(int)
+            ints = True
+        except:
+            pass
         try:
             float_vals = df[col].values.astype(float)
         except:
             raise SortSeqError(\
                 'Cannot convert values in column %s to numbers.'%col)
+        if np.isnan(df[col].values).any():
+            raise SortSeqError(
+                'At least one entry in position column is not a number')
+        if not df[col].values.dtype == int:
+            if ints:
+                if fix:
+                    df[col] = df[col].astype(int)
+                else:
+                    raise SortSeqError(\
+                        'Positions are not integers; set fix=True to fix.')
+            else:
+                pass
 
         first = df[col].iloc[0]
+        last = df[col].iloc[-1]
+        #if positions are integers, check to make sure they are in order. 
+        if ints:
+            if not np.array_equal(df[col].values,np.arange(first,last+1)):
+                raise SortSeqError('Positions are not consecutive integers.')
 
         if first < 0:
             raise SortSeqError('Positions are not all nonnegative.')

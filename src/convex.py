@@ -1,24 +1,69 @@
+from __future__ import division
 import numpy as np
 from cvxopt import solvers
 import cvxopt
 import scipy.sparse
 import warnings
 
-def ridge_objective(params, mean_bins, Xmat, alpha):
+def ridge_objective(params, N0, mean_bins, Xmat, alpha):
     '''
     Computes ridge objective function (sum of squares of error with L2
     penalty.
     '''
-    predicted = np.dot(Xmat, params)
-    r_obj = ((y - mean_bins)**2).sum()
-    r_obj += alpha * (params**2).sum()
+    
+    predicted = Xmat * params
+    #predicted = np.array(predicted)
+    #print (predicted.toarray() - mean_bins)
+    r_obj = ((predicted.T - mean_bins)**2).T
+    #print 'hi'
+    #print r_obj
+    #print r_obj.shape
+    #weight by sequence counts
+    r_obj = N0.transpose()*r_obj
+    #now sum to get a scalar
+    r_obj = r_obj.sum()
+    print r_obj
+    #add ridge penalty.
+    r_obj += alpha/2*np.sum(cvxopt.mul(params,params))
 
     return r_obj
+
+def ridge_gradient(params, N0, Nsm, mean_bins, s, alpha):
+    '''
+    The gradiant of the ridge regression objective.
+    '''    
+    
+    #predicted = s.multiply(np.transpose(np.array(params)))
+    diag_matrix = np.zeros((len(mean_bins),len(mean_bins)))
+    predicted = s * params
+    mean_predicted = (predicted.transpose() - mean_bins).transpose()
+    np.fill_diagonal(diag_matrix,mean_predicted)
+    #multiply by N0 matrix to weight by sequence number and sum
+    temp_sequence = (s.T*diag_matrix)
+    grad = 2*(np.matrix(N0)*temp_sequence.T)
+    #now add ridge penalty term.
+    grad +=  np.transpose(alpha*params)
+    print grad
+    return grad
+
+def ridge_hess(params, N0, mean_bins, s_hessian_mat, alpha):
+    '''
+    The hessian of the ridge regression objective.
+    '''
+    plen = len(params)
+    #multpily by sequence counts and sum over seqs gives 1xn^2 matrix
+    hes = np.transpose(N0)*s_hessian_mat
+    #reshape to square matrix
+    hes = hes.reshape((plen,plen),order='F')
+    #add penalty
+    hes += np.identity(len(params))*2*alpha
+    
+    return np.identity(len(params))*2*alpha
 
 def test_iter(A, B):
     m,n1 = A.shape
     n2 = B.shape[1]
-    Cshape = (m, n1*n2)
+    Cshape = (m, n1 * n2)
     with warnings.catch_warnings():
         #ignore depreciation warnings
         warnings.simplefilter("ignore")
@@ -31,8 +76,8 @@ def test_iter(A, B):
         for i,(a,b) in enumerate(zip(A, B)):
             #column indexes
             col1 = a.indices * n2
-            col[i] = (col1[:,None]+b.indices).flatten()
-            row[i] = np.full((a.nnz*b.nnz,), i)
+            col[i] = (col1[:,None] + b.indices).flatten()
+            row[i] = np.full((a.nnz * b.nnz,), i)
             #all data will be 1's, as it is only true or false data
             data[i] = np.ones(len(col[i]))
     data = np.concatenate(data)
@@ -40,20 +85,28 @@ def test_iter(A, B):
     row = np.concatenate(row)
     return scipy.sparse.coo_matrix((data,(row,col)),shape=Cshape)
 
-def ridge_gradient(params, mean_bins, Xmat, alpha):
-    '''
-    The gradiant of the ridge regression objective.
-    '''
-    grad = 2*(np.dot(np.dot(Xmat.T, Xmat), params) - np.dot(Xmat.T, y))
-    grad += 2*(alpha * params)
-    return grad
-
-def ridge_hess(params, mean_bins, Xmat, alpha):
-    '''
-    The hessian of the ridge regression objective.
-    '''
-    hessian = np.dot(Xmat.T, Xmat) + np.eye(2) * alpha
-    return hessian
+def robls(A, b,N0, rho):
+    m, n = A.shape
+    def F(x=None, z=None):
+        if x is None: return 0, cvxopt.matrix(0.0, (n,1))
+        
+        y = A*x-b
+        y = np.array(y)
+        w = np.sqrt(rho + y**2)
+        print x[:5]
+        print w[:5]
+        f = cvxopt.matrix(sum(w))
+        print f
+        Df = ((y/w)).T * A
+        print Df
+        Df_cvx = cvxopt.matrix(Df)
+        if z is None: return f, Df_cvx
+        diag_matrix = np.zeros((len(w),len(w)))
+        np.fill_diagonal(diag_matrix,z[0] * rho * (w**-3))
+        H = cvxopt.matrix(A.T * diag_matrix * A)
+    
+        return f, Df_cvx, H
+    return solvers.cp(F)['x']
 
 def test_iter(A, B):
     m,n1 = A.shape
@@ -168,28 +221,31 @@ def convex_opt_agorithm(s,N0, Nsm,tm,alpha=1):
         return f, Df_cvx, H
     return solvers.cp(F)['x']
 
-def convex_opt_agorithm_LS(s,Nsm,tm,alpha=1):
+
+def convex_opt_algorithm_LS(s,N0,Nsm,tm,alpha=.01):
     '''This function will use cvxopt to perform convex optimization
         on the least squares objective'''
     bins = tm.shape[1]
-    N0_matrix = np.matrix(N0)
-    tm_matrix = np.matrix(tm)
     #get weighted mean of bin number and counts
-    bin_numbers = np.array([int(q.split('_')[1]) for q in Nsm.columns])
-    temp_Nsm = np.array(Nsm)*bin_numbers
-    mean_bins = np.mean(temp_Nsm,axis=1)
+    bin_values = np.array(tm)
+    #renormalize bin values so they have mean = 0 and std = 1
+    bin_values = (bin_values - bin_values.mean())/bin_values.std()
+    temp_Nsm = np.array(Nsm)*bin_values
+    mean_bins = np.sum(temp_Nsm,axis=1)/Nsm.sum(axis=1)
+    #mean_bins = np.divide(np.sum(temp_Nsm,axis=1),np.sum(np.array(N0),axis=1))
+    s_hessian_mat = scipy.sparse.csr_matrix(test_iter(s,s))
     i,c = s.shape
+    #print i,c
+    #return robls(s,np.matrix(mean_bins).T,N0,.001)
     #create s matrix, the elements of this matrix are delta_s@i * delta s2@j
     #we will need this for hessian.
+    
     s_hessian_mat = scipy.sparse.csr_matrix(test_iter(s,s))
     def F(x=None, z=None):
-        if x is None: return 0, matrix(0.0, (c,1))
-        y = s*x - mean_counts
-        f = cvxopt.matrix(ridge_objective(x,mean_bins,s,alpha))
-        Df = cvxopt.matrix(ridge_gradient(x,mean_bins,s,alpha))
+        if x is None: return 0, cvxopt.matrix(0.0, (c,1))
+        f = cvxopt.matrix(ridge_objective(x,N0,mean_bins,s,alpha))
+        Df = cvxopt.matrix(ridge_gradient(x,N0,Nsm,mean_bins,s,alpha))
         if z is None: return f, Df
-        H = cvxopt.matrix(ridge_hess(x,mean_bins,s,alpha))
-                  
-        
-        return f, Df_cvx, H
+        H = z[0]*cvxopt.matrix(ridge_hess(x,N0,mean_bins,s_hessian_mat,alpha))     
+        return f, Df, H
     return solvers.cp(F)['x']

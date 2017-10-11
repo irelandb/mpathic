@@ -14,6 +14,7 @@ import mpathic.utils as utils
 import mpathic.EstimateMutualInfoforMImax as EstimateMutualInfoforMImax
 import pymc
 import mpathic.stepper as stepper
+from sklearn import linear_model
 import os
 from mpathic import SortSeqError
 import mpathic.io as io
@@ -51,7 +52,6 @@ def MaximizeMI_memsaver(
         p['val'] = numerics.eval_modelmatrix_on_mutarray(
             np.transpose(value),seq_mat,wtrow)            
         MI = EstimateMutualInfoforMImax.alt4(p.copy())
-        print(MI)
         return n_seqs*MI
     #set location to save full MCMC chain
     if db:
@@ -101,14 +101,24 @@ def MaximizeMI_pair(
     return emat_mean
 
 def reverse_parameterization(output,cols_for_keep,wtrow,seq_dict,bins=1,
-        modeltype='MAT'):
-    output = output[:-bins]
+        modeltype='MAT',fittype='PR'):
+    if fittype == 'PR':
+        output = output[:-bins]
     df_out = np.zeros(len(wtrow))
     df_out.flat[cols_for_keep] = output
     df_out2 = df_out.reshape( \
         (len(seq_dict),len(df_out)/len(seq_dict)),order='F') 
     
     return df_out2
+
+def Compute_Least_Squares(raveledmat,batch,sw,alpha=0):
+    '''Ridge regression is the only sklearn regressor that supports sample
+        weights, which will make this much faster'''
+    clf = linear_model.Ridge(alpha=alpha,normalize=True,solver='sparse_cg',
+         fit_intercept=False)
+    clf.fit(raveledmat,batch,sample_weight=sw)
+    emat = clf.coef_
+    return emat
 
 def find_second_NBR_matrix_entry(s):
     '''this is a function for use with numpy apply along axis. 
@@ -123,12 +133,13 @@ def convex_opt(
         df.copy(),modeltype,rowsforwtcalc=rowsforwtcalc)
     #need to make sure there is at least one representative 
     #of each possible entry, otherwise don't fit it.
-    no_reps = np.sum(np.matrix(df['ct_0'])*seq_mat,axis=0)
+    
+    no_reps = np.sum(np.matrix(df['ct'])*seq_mat,axis=0)
     cols_for_keep = [x for x in range( \
         seq_mat.shape[1]) if x in np.nonzero(no_reps)[1]]
     #if the model is a neighbor model we also need to 
     #make sure we only give each mutation one parameter.
-    if modeltype =='NBR':
+    if modeltype == 'NBR':
         mut_df = profile_mut.main(df.loc[:rowsforwtcalc,:])
         wtseq = ''.join(list(mut_df['wt']))
         
@@ -159,17 +170,35 @@ def convex_opt(
             if cols_for_keep[x] not in bad_cols]
     seq_mat = seq_mat.tocsc()
     seq_mat2 = seq_mat[:,cols_for_keep]
+    #exclude bin 0 as it is the sequenced library and can throw off results.
     columns = [x for x in columns if 'ct_0' != x]
-    N0 = np.matrix(df['ct_0']).T
-    Nsm = np.matrix(df[columns])
+    #extract bin numbers from columns
+    bin_numbers = [np.int(x.split('_')[1]) for x in columns]
+    
+    #look to see if we have mean values for bin fluorescence
     if tm:
         tm = np.array(tm)
+    #if not, set them according to bin number
     else:
-        tm = np.matrix([x for x in range(1,len(columns)+1)])
+        tm = np.matrix(bin_numbers)
+    #Poisson regression == PR
     if fittype == 'PR':
+        N0 = np.matrix(df['ct_0']).T
+        Nsm = np.matrix(df[columns])
         output = convex.convex_opt_agorithm(seq_mat2,N0,Nsm,tm)
+    #least squares == LS
     elif fittype == 'LS':
-        output = convex.convex_opt_algorith_LS(seq_mat2,Nsm,tm)
+        Nsm = np.array(df[columns])
+        N0 = np.array(df[columns].sum(axis=1)).T
+        #remove rows with zero counts
+        good_rows = np.nonzero(N0)[0]
+        Nsm = Nsm[good_rows,:]
+        seq_mat2 = seq_mat2[good_rows,:]
+        N0 = np.array(np.matrix(N0[good_rows]).T)
+        #normalize N0
+        #N0 = N0/N0.sum()
+        #N0 = np.matrix(df['ct']/(df['ct'].sum())).T
+        output = convex.convex_opt_algorithm_LS(seq_mat2,N0,Nsm,tm)
     else:
         raise SortSeqError('incorrect fit type')
     output_parameterized = reverse_parameterization(
@@ -369,6 +398,7 @@ def main(df,lm='IM',modeltype='MAT',LS_means_std=None,\
     df.loc[:,seq_col_name] = df.loc[:,seq_col_name].str.slice(start,end)
     df = utils.collapse_further(df)
     col_headers = utils.get_column_headers(df)
+    #drop empty rows
 
     #make sure all counts are ints
     df[col_headers] = df[col_headers].astype(int)
@@ -419,10 +449,36 @@ def main(df,lm='IM',modeltype='MAT',LS_means_std=None,\
             means.index = labels
         else:
             means = None
-
-        #Use ridge via convex optimization to find matrix.       
-        emat = convex_opt(df,seq_dict,inv_dict,col_headers,tm=tm, \
-            dicttype=dicttype, modeltype=modeltype,fittype='LS')
+        #drop all rows without counts
+        df['ct'] = df[col_headers].sum(axis=1)
+        df = df[df.ct != 0]        
+        df.reset_index(inplace=True,drop=True)
+        ''' For sort-seq experiments, bin_0 is library only and isn't the lowest
+            expression even though it is will be calculated as such if we proceed.
+            Therefore is drop_library is passed, drop this column from analysis.'''
+        if drop_library:
+            try:     
+                df.drop('ct_0',inplace=True)
+                col_headers = utils.get_column_headers(df)
+                if len(col_headers) < 2:
+                    raise SortSeqError(
+                        '''After dropping library there are no longer enough 
+                        columns to run the analysis''')
+            except:
+                raise SortSeqError('''drop_library option was passed, but no ct_0
+                    column exists''')
+        #parameterize sequences into 3xL vectors
+                               
+        raveledmat,batch,sw = utils.genweightandmat(
+            df,par_seq_dict,dicttype,means=means,
+            modeltype=modeltype)
+        columns = [x for x in col_headers if 'ct_0' != x]
+        #extract bin numbers from columns
+        bin_numbers = np.array([np.int(x.split('_')[1]) for x in columns])
+        #normalize batch values
+        batch = (batch - bin_numbers.mean())/bin_numbers.std()
+        #Use ridge regression to find matrix.       
+        emat = Compute_Least_Squares(raveledmat,batch,sw,alpha=alpha)
 
     if lm == 'IM':
         seq_mat,wtrow = numerics.dataset2mutarray(df.copy(),modeltype)
@@ -508,7 +564,7 @@ def main(df,lm='IM',modeltype='MAT',LS_means_std=None,\
             to be changed.'''
     elif lm == 'PR':
         emat_typical = np.transpose(emat)
-    else: #must be Least squares
+    elif lm == 'LS':
         emat_typical = utils.emat_typical_parameterization(emat,len(seq_dict))        
         if modeltype == 'NBR':
              try:
@@ -607,7 +663,7 @@ def add_subparser(subparsers):
         '--initialize',default='rand',choices=['rand','LS','PR'],
         help='''How to choose starting point for MCMC''')
     p.add_argument(
-        '--tm',default=None,help='''How to choose starting point for MCMC''')
+        '--tm',default=None,help='''mean fluorescence values for bins.''')
     p.add_argument(
         '-rn','--runnum',default=0,help='''For multiple runs this will change
         output data base file name''')            

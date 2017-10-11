@@ -91,6 +91,8 @@ def wrapper(args):
             p = subprocess.Popen(editted_command,shell=True,\
                 stdout=subprocess.PIPE,stderr=subprocess.PIPE)
             stdout_str, stderr_str = p.communicate()
+            print('ERROR IS')
+            print(stderr_str)
 
             # Run checks on stdout and stderr
             prepend = '. '
